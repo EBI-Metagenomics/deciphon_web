@@ -1,0 +1,39 @@
+# Deciphon Web
+The web server and client for submitting queries to [Deciphon](https://github.com/EBI-Metagenomics/deciphon).
+
+# Architecture
+This is a Django app. 
+Deciphon interacts with an sqlite3 database to pull in job, run their queries, and store results.
+Deciphon Web wraps this database in [unmanaged Django Models](https://docs.djangoproject.com/en/3.2/ref/models/options/#django.db.models.Options.managed).
+It uses Django templates to present a web interface to submit jobs (consisting of queries), and poll for the results. 
+
+## Databases
+###`default`
+A standard Django database in sqlite3. 
+This is used for boilerplate Django things like app tables and admin users.
+
+###`deciphon`
+The sqlite3 database managed by deciphon itself. 
+A [Django DB Router](https://docs.djangoproject.com/en/3.2/topics/db/multi-db/#multiple-databases) makes sure that any `deciphon.models` model read/writes from this database rather than `default`.
+
+
+# Development
+## The basics
+- Check out the repository.
+- Create and activate a virtualenv or conda env for the project.
+- `pip install -r requirements.txt`
+- `python manage.py migrate`
+- `python manage.py runserver 8000`
+
+## Admin interface
+The app has Django Admin installed, so you can browse the database models.
+- `python manage.py createsuperuser`
+- [log in to the admin console](127.0.0.1:8000/admin)
+
+## Style
+Use [Black](https://black.rtfd.io) to format code before committing.
+E.g. `black .`
+
+# Testing
+
+# Deployment
