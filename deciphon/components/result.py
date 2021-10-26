@@ -1,8 +1,6 @@
-from typing import List
-
 from django_unicorn.components import UnicornView, PollUpdate
 
-from deciphon.models import Job, Result
+from deciphon.models import Job
 
 
 class ResultView(UnicornView):

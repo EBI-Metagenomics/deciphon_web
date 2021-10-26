@@ -1,3 +1,6 @@
 .idea/
 databases/
 static_files/
+test-results/
+.pytest_cache/
+.coverage

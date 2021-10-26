@@ -36,14 +36,18 @@ class SubmitJobView(UnicornView):
             self.alphabet_selected = str(default_alphabet.id)
 
     def can_submit(self):
-        return len(self._seqs) > 0 and self.alphabet_selected is not None and self.target_selected is not None
+        return (
+            len(self._seqs) > 0
+            and self.alphabet_selected is not None
+            and self.target_selected is not None
+        )
 
     def detect_sequence(self, queryText):
         if not queryText:
             return
 
         try:
-            self.queryText = queryText.replace('⏎', '\n')
+            self.queryText = queryText.replace("⏎", "\n")
             self._seqs = list(SeqIO.parse(StringIO(self.queryText), "fasta"))
             alphabet = alphabet_of_seqrecord(self._seqs[0])
             assert alphabet is not None
@@ -63,11 +67,18 @@ class SubmitJobView(UnicornView):
         job_name = create_memorable_job_name()
 
         with transaction.atomic():
-            job = Job.objects.create(target_id=self.target_selected, abc_id=self.alphabet_selected, user=user, sid=job_name)
+            job = Job.objects.create(
+                target_id=self.target_selected,
+                abc_id=self.alphabet_selected,
+                user=user,
+                sid=job_name,
+            )
             for sequence in self._seqs:
                 best_query_name = (
-                    sequence.description if sequence.name == 'Generated' and sequence.description is not None
-                    else sequence.name)
+                    sequence.description
+                    if sequence.name == "Generated" and sequence.description is not None
+                    else sequence.name
+                )
                 job.queries.create(name=best_query_name, seq=sequence.seq)
 
-        return HttpResponseRedirect(reverse('result', args=(job_name,)))
+        return HttpResponseRedirect(reverse("result", args=(job_name,)))

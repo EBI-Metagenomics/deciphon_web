@@ -21,7 +21,11 @@ from deciphon import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("unicorn/", include("django_unicorn.urls")),
-    path('', views.IndexView.as_view(), name='index'),
-    path('result/<slug:job_sid>', views.ResultView.as_view(), name='result'),
-    path('result/<slug:job_sid>/download/<str:filetype>', views.ResultDownloadView.as_view(), name='result'),
+    path("", views.IndexView.as_view(), name="index"),
+    path("result/<slug:job_sid>", views.ResultView.as_view(), name="result"),
+    path(
+        "result/<slug:job_sid>/download/<str:filetype>",
+        views.ResultDownloadView.as_view(),
+        name="result",
+    ),
 ]

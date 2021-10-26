@@ -7,99 +7,114 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Alphabet',
+            name="Alphabet",
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=15)),
-                ('size', models.IntegerField()),
-                ('sym_idx64', models.CharField(max_length=255)),
-                ('symbols', models.CharField(max_length=31)),
-                ('creation', models.DateTimeField(auto_now=True)),
-                ('type', models.CharField(choices=[('dna', 'dna'), ('rna', 'rna')], max_length=7)),
-                ('any_symbol', models.CharField(max_length=1)),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("name", models.CharField(max_length=15)),
+                ("size", models.IntegerField()),
+                ("sym_idx64", models.CharField(max_length=255)),
+                ("symbols", models.CharField(max_length=31)),
+                ("creation", models.DateTimeField(auto_now=True)),
+                (
+                    "type",
+                    models.CharField(
+                        choices=[("dna", "dna"), ("rna", "rna")], max_length=7
+                    ),
+                ),
+                ("any_symbol", models.CharField(max_length=1)),
             ],
             options={
-                'db_table': 'abc',
-                'abstract': False,
-                'managed': False,
+                "db_table": "abc",
+                "abstract": False,
+                "managed": False,
             },
         ),
         migrations.CreateModel(
-            name='DeciphonUser',
+            name="DeciphonUser",
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('username', models.CharField(max_length=31)),
-                ('name', models.CharField(max_length=255)),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("username", models.CharField(max_length=31)),
+                ("name", models.CharField(max_length=255)),
             ],
             options={
-                'db_table': 'user',
-                'abstract': False,
-                'managed': False,
+                "db_table": "user",
+                "abstract": False,
+                "managed": False,
             },
         ),
         migrations.CreateModel(
-            name='Job',
+            name="Job",
             fields=[
-                ('submission', models.DateTimeField(auto_created=True)),
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('sid', models.CharField(max_length=19)),
-                ('multiple_hits', models.BooleanField(default=False)),
-                ('hmmer3_compat', models.BooleanField(default=False)),
-                ('status', models.CharField(choices=[('pend', 'Pending'), ('run', 'Running'), ('done', 'Done'), ('fail', 'Failed')], max_length=10)),
-                ('status_log', models.CharField(max_length=255, null=True)),
-                ('exec_started', models.DateTimeField(null=True)),
-                ('exec_ended', models.DateTimeField(null=True)),
+                ("submission", models.DateTimeField(auto_created=True)),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("sid", models.CharField(max_length=19)),
+                ("multiple_hits", models.BooleanField(default=False)),
+                ("hmmer3_compat", models.BooleanField(default=False)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("pend", "Pending"),
+                            ("run", "Running"),
+                            ("done", "Done"),
+                            ("fail", "Failed"),
+                        ],
+                        max_length=10,
+                    ),
+                ),
+                ("status_log", models.CharField(max_length=255, null=True)),
+                ("exec_started", models.DateTimeField(null=True)),
+                ("exec_ended", models.DateTimeField(null=True)),
             ],
             options={
-                'db_table': 'job',
-                'abstract': False,
-                'managed': False,
+                "db_table": "job",
+                "abstract": False,
+                "managed": False,
             },
         ),
         migrations.CreateModel(
-            name='Query',
+            name="Query",
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=255)),
-                ('query', models.TextField()),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("name", models.CharField(max_length=255)),
+                ("query", models.TextField()),
             ],
             options={
-                'db_table': 'query',
-                'abstract': False,
-                'managed': False,
+                "db_table": "query",
+                "abstract": False,
+                "managed": False,
             },
         ),
         migrations.CreateModel(
-            name='Result',
+            name="Result",
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('amino_faa', models.TextField()),
-                ('codon_fna', models.TextField()),
-                ('output_gff', models.TextField()),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("amino_faa", models.TextField()),
+                ("codon_fna", models.TextField()),
+                ("output_gff", models.TextField()),
             ],
             options={
-                'db_table': 'result',
-                'abstract': False,
-                'managed': False,
+                "db_table": "result",
+                "abstract": False,
+                "managed": False,
             },
         ),
         migrations.CreateModel(
-            name='Target',
+            name="Target",
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=255)),
-                ('filepath', models.CharField(max_length=255)),
-                ('xxh3', models.IntegerField()),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("name", models.CharField(max_length=255)),
+                ("filepath", models.CharField(max_length=255)),
+                ("xxh3", models.IntegerField()),
             ],
             options={
-                'db_table': 'target',
-                'abstract': False,
-                'managed': False,
+                "db_table": "target",
+                "abstract": False,
+                "managed": False,
             },
         ),
     ]

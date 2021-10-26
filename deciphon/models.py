@@ -1,12 +1,14 @@
+from django.conf import settings
 from django.db import models
 
 
 class DeciphonModel(models.Model):
+    objects = models.Manager()
     id = models.AutoField(primary_key=True)
 
     class Meta:
         abstract = True
-        managed = False
+        managed = getattr(settings, "UNIT_TESTING", False)
 
 
 class Alphabet(DeciphonModel):
@@ -44,7 +46,7 @@ class Target(DeciphonModel):
 
 class SentinelUserManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(username='sentinel')
+        return super().get_queryset().filter(username="sentinel")
 
 
 class DeciphonUser(DeciphonModel):
@@ -61,10 +63,10 @@ class DeciphonUser(DeciphonModel):
 
 
 class Job(DeciphonModel):
-    PENDING = 'pend'
-    RUNNING = 'run'
-    DONE = 'done'
-    FAILED = 'fail'
+    PENDING = "pend"
+    RUNNING = "run"
+    DONE = "done"
+    FAILED = "fail"
     STATUSES = [
         (PENDING, "Pending"),
         (RUNNING, "Running"),
@@ -80,7 +82,7 @@ class Job(DeciphonModel):
     target = models.ForeignKey(
         Target, on_delete=models.DO_NOTHING, related_name="jobs", db_column="target"
     )
-    status = models.CharField(max_length=10, choices=STATUSES, default='pend')
+    status = models.CharField(max_length=10, choices=STATUSES, default="pend")
     status_log = models.CharField(max_length=255, null=True, blank=True)
     submission = models.DateTimeField(auto_now=True)
     exec_started = models.DateTimeField(null=True, blank=True)
