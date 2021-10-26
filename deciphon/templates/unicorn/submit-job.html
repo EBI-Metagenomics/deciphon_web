@@ -3,7 +3,7 @@
 
     <div class="vf-stack vf-stack--200">
         <div/>
-        <button class="vf-button vf-button--secondary vf-button--sm" onclick="cleanUpAndStage()">
+        <button class="vf-button vf-button--secondary vf-button--sm" onclick="cleanUpAndStage()" id="check-query">
             Check query
         </button>
     </div>
@@ -15,8 +15,8 @@
             <p class="vf-form__helper">Enter a query to detect automatically</p>
             <div class="max-width-select">
                 <div class="vf-form__item vf-stack">
-                    <label class="vf-form__label" for="vf-form__select">Query language</label>
-                    <select class="vf-form__select" id="vf-form__select" unicorn:model="alphabet_selected">
+                    <label class="vf-form__label" for="alphabet-select">Query language</label>
+                    <select class="vf-form__select" id="alphabet-select" unicorn:model="alphabet_selected">
                         {% for alphabet in alphabet_options %}
                             <option value="{{ alphabet.id }}">
                                 {{ alphabet.name|upper }} ({{ alphabet.symbols }})
@@ -49,7 +49,7 @@
 
 
     <div class="query-buttons">
-        <button class="vf-button vf-button--primary" onclick="submit()" {% if  not can_submit %}disabled{% endif %}>
+        <button class="vf-button vf-button--primary" onclick="submit()" {% if  not can_submit %}disabled{% endif %} id="submit">
             Submit query
         </button>
     </div>

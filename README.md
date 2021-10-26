@@ -18,6 +18,7 @@ This is used for boilerplate Django things like app tables and admin users.
 The sqlite3 database managed by deciphon itself. 
 A [Django DB Router](https://docs.djangoproject.com/en/3.2/topics/db/multi-db/#multiple-databases) makes sure that any `deciphon.models` model read/writes from this database rather than `default`.
 
+**Note** when unit testing, a single database is used so that transactional tests can be used.
 
 # Development
 ## The basics
@@ -40,5 +41,13 @@ E.g. `black .` in the repository’s base directory.
 
 # Testing
 `pytest` will run the test suite.
+
+### Selenium integrtation test
+`pytest` runs unit tests, as well as a [Selenium](https://pypi.org/project/selenium/) based test of the UI using a browser.
+For this test to not fail, you need Chrome and the [Chromedriver](https://chromedriver.chromium.org) installed.
+E.g. on a Mac use Homebrew
+`brew install --cask chromedriver`
+(MacOS will probably complain about launching an unsigned app the first time...
+`open /usr/local/Caskroom/chromedriver` to find the chromedriver executable in Finder and then open it once from there to accept the warning.)
 
 # Deployment
