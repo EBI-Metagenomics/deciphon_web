@@ -10,11 +10,11 @@ We use [Django-Unicorn](https://www.django-unicorn.com) to handle frontend/backe
 and to do simple partial upsets of the page when polling for job completion.
 
 ## Databases
-###`default`
+### `default`
 A standard Django database in sqlite3. 
 This is used for boilerplate Django things like app tables and admin users.
 
-###`deciphon`
+### `deciphon`
 The sqlite3 database managed by deciphon itself. 
 A [Django DB Router](https://docs.djangoproject.com/en/3.2/topics/db/multi-db/#multiple-databases) makes sure that any `deciphon.models` model read/writes from this database rather than `default`.
 
@@ -39,5 +39,6 @@ Use [Black](https://black.rtfd.io) to format code before committing.
 E.g. `black .` in the repository’s base directory. 
 
 # Testing
+`pytest` will run the test suite.
 
 # Deployment
