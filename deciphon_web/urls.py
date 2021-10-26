@@ -14,8 +14,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+
+from deciphon import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("unicorn/", include("django_unicorn.urls")),
+    path('', views.IndexView.as_view(), name='index'),
+    path('result/<slug:job_sid>', views.ResultView.as_view(), name='result'),
+    path('result/<slug:job_sid>/download/<str:filetype>', views.ResultDownloadView.as_view(), name='result'),
 ]

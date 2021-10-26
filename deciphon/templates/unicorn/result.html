@@ -1,0 +1,74 @@
+<div class="container" unicorn:poll-2000="check_status">
+    {% if job.status == 'pend' %}
+        <h3>Job is pending</h3>
+        <span class="vf-badge vf-badge--primary">live updating</span>
+        <div class="loader"></div>
+    {% endif %}
+
+    {% if job.status == 'run' %}
+        <h3>Job is running</h3>
+         <span class="vf-badge vf-badge--primary">live updating</span>
+        <div class="loader"></div>
+    {% endif %}
+
+    {% if job.status == 'fail' %}
+        <div class="vf-stack vf-stack--800">
+            <h3>Job has failed</h3>
+            <div><span class="vf-form__helper--error">Logs: {{ job.status_log | title }}</span></div>
+            <h2 class="vf-section-header__heading vf-section-header__heading--is-link" id="vf-button--link">
+                <a href="/">Start again</a>
+                <svg aria-hidden="true" class="vf-section-header__icon | vf-icon vf-icon-arrow--inline-end" width="1em" height="1em" xmlns="http://www.w3.org/2000/svg"><path d="M0 12c0 6.627 5.373 12 12 12s12-5.373 12-12S18.627 0 12 0C5.376.008.008 5.376 0 12zm13.707-5.209l4.5 4.5a1 1 0 010 1.414l-4.5 4.5a1 1 0 01-1.414-1.414l2.366-2.367a.25.25 0 00-.177-.424H6a1 1 0 010-2h8.482a.25.25 0 00.177-.427l-2.366-2.368a1 1 0 011.414-1.414z" fill="" fill-rule="nonzero"></path></svg>
+            </h2>
+        </div>
+    {% endif %}
+
+    {% if job.status == 'done' %}
+        <div class="vf-stack vf-stack--800">
+            <h3>Job complete</h3>
+            <div><span class="vf-form__helper">Finished at: {{ job.exec_ended }}</span></div>
+
+            <section class="vf-card-container vf-card-container__col-3 | vf-u-background-color--grey--lightest vf-u-fullbleed" style="--vf-card__image--aspect-ratio: 16 / 9;">
+                <div class="vf-card-container__inner">
+                    <div class="vf-section-header">
+                        <h2 class="vf-section-header__heading">Downloads</h2>
+                        <p class="vf-section-header__text">Results files from your queries</p>
+                    </div>
+
+                    <article class="vf-card vf-card--brand vf-card--bordered">
+                      <div class="vf-card__content | vf-stack vf-stack--400">
+                        <h3 class="vf-card__heading"><a class="vf-card__link" href="/result/{{ job.sid }}/download/gff">
+                            <i class="icon icon-fileformats icon-GFF"></i> Download GFF
+                        </a></h3>
+                        <p class="vf-card__text">GFF (General Feature Format) v3 file listing all found features.</p>
+                      </div>
+                    </article>
+
+                    <article class="vf-card vf-card--brand vf-card--bordered">
+                      <div class="vf-card__content | vf-stack vf-stack--400">
+                        <h3 class="vf-card__heading"><a class="vf-card__link" href="/result/{{ job.sid }}/download/fna">
+                            <i class="icon icon-fileformats icon-FASTA"></i> Download FNA
+                        </a></h3>
+                        <p class="vf-card__text">FNA (FASTA Nucleic Acid) file of matched sequences.</p>
+                      </div>
+                    </article>
+
+                    <article class="vf-card vf-card--brand vf-card--bordered">
+                      <div class="vf-card__content | vf-stack vf-stack--400">
+                        <h3 class="vf-card__heading"><a class="vf-card__link" href="/result/{{ job.sid }}/download/faa">
+                            <i class="icon icon-fileformats icon-FASTA"></i> Download FAA
+                        </a></h3>
+                        <p class="vf-card__text">FNA (FASTA Amino Acids) file of matched amino acid sequences.</p>
+                      </div>
+                    </article>
+
+              </div>
+            </section>
+
+
+
+
+
+        </div>
+    {% endif %}
+
+</div>

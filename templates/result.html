@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load static unicorn %}
+
+{% block content %}
+    <nav class="vf-breadcrumbs" aria-label="Breadcrumb">
+      <ul class="vf-breadcrumbs__list | vf-list vf-list--inline">
+        <li class="vf-breadcrumbs__item">
+          <a href="/" class="vf-breadcrumbs__link">Home</a>
+        </li>
+        <li class="vf-breadcrumbs__item" aria-current="location">
+          Job {{ job.sid }}
+        </li>
+      </ul>
+    </nav>
+
+    <h1>Query results</h1>
+    {% unicorn 'deciphon.components.result.ResultView' job=job %}
+
+{% endblock %}

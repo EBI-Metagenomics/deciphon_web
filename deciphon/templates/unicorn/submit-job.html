@@ -1,0 +1,75 @@
+{% load unicorn %}
+<div class="container vf-stack vf-stack--800" >
+
+    <div class="vf-stack vf-stack--200">
+        <div/>
+        <button class="vf-button vf-button--secondary vf-button--sm" onclick="cleanUpAndStage()">
+            Check query
+        </button>
+    </div>
+
+    <div class="vf-grid">
+        <fieldset class="vf-form__fieldset | vf-stack vf-stack--400">
+            <legend class="vf-form__legend">Query type</legend>
+
+            <p class="vf-form__helper">Enter a query to detect automatically</p>
+            <div class="max-width-select">
+                <div class="vf-form__item vf-stack">
+                    <label class="vf-form__label" for="vf-form__select">Query language</label>
+                    <select class="vf-form__select" id="vf-form__select" unicorn:model="alphabet_selected">
+                        {% for alphabet in alphabet_options %}
+                            <option value="{{ alphabet.id }}">
+                                {{ alphabet.name|upper }} ({{ alphabet.symbols }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset class="vf-form__fieldset | vf-stack vf-stack--400">
+            <legend class="vf-form__legend">Target database</legend>
+            <p class="vf-form__helper">Support for more database will be added over time</p>
+            <div class="vf-cluster vf-cluster--400">
+                <div class="vf-cluster__inner">
+                    {% for target in target_options %}
+                        <div class="vf-form__item vf-form__item--radio">
+                            <input type="radio" name="target" unicorn:model="target_selected"
+                                   value="{{ target.id }}" id="target_{{ target.id }}" class="vf-form__radio"
+                                   {% if target_selected == target.id %}checked{% endif %}
+                            />
+                            <label for="target_{{ target.id }}" class="vf-form__label">{{ target.name|upper }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </fieldset>
+
+    </div>
+
+
+    <div class="query-buttons">
+        <button class="vf-button vf-button--primary" onclick="submit()" {% if  not can_submit %}disabled{% endif %}>
+            Submit query
+        </button>
+    </div>
+
+    <script>
+        async function cleanUpAndStage() {
+            const el = document.getElementById('queryText');
+            await el.cleanUp();
+            let sequence = el.sequence;
+            {% comment %}
+                {# Replace newlines with a char, to work around a bug in Unicorn #}
+            {% endcomment %}
+            sequence =  sequence.replace(/(\n)+/g, '⏎');
+            await Unicorn.call('deciphon.components.submit_job.SubmitJobView', 'detect_sequence', sequence);
+        }
+
+        async function submit() {
+            await cleanUpAndStage();
+            await Unicorn.call('deciphon.components.submit_job.SubmitJobView', 'submit');
+        }
+
+    </script>
+</div>

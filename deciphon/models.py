@@ -42,9 +42,16 @@ class Target(DeciphonModel):
         return self.name or str(self.id)
 
 
+class SentinelUserManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(username='sentinel')
+
+
 class DeciphonUser(DeciphonModel):
     username = models.CharField(max_length=31)
     name = models.CharField(max_length=255)
+
+    sentinels = SentinelUserManager()
 
     class Meta(DeciphonModel.Meta):
         db_table = "user"
@@ -54,11 +61,15 @@ class DeciphonUser(DeciphonModel):
 
 
 class Job(DeciphonModel):
+    PENDING = 'pend'
+    RUNNING = 'run'
+    DONE = 'done'
+    FAILED = 'fail'
     STATUSES = [
-        ("pend", "Pending"),
-        ("run", "Running"),
-        ("done", "Done"),
-        ("fail", "Failed"),
+        (PENDING, "Pending"),
+        (RUNNING, "Running"),
+        (DONE, "Done"),
+        (FAILED, "Failed"),
     ]
     sid = models.CharField(max_length=19)
     multiple_hits = models.BooleanField(default=False)
@@ -69,11 +80,11 @@ class Job(DeciphonModel):
     target = models.ForeignKey(
         Target, on_delete=models.DO_NOTHING, related_name="jobs", db_column="target"
     )
-    status = models.CharField(max_length=10, choices=STATUSES)
-    status_log = models.CharField(max_length=255, null=True)
-    submission = models.DateTimeField(auto_created=True)
-    exec_started = models.DateTimeField(null=True)
-    exec_ended = models.DateTimeField(null=True)
+    status = models.CharField(max_length=10, choices=STATUSES, default='pend')
+    status_log = models.CharField(max_length=255, null=True, blank=True)
+    submission = models.DateTimeField(auto_now=True)
+    exec_started = models.DateTimeField(null=True, blank=True)
+    exec_ended = models.DateTimeField(null=True, blank=True)
     user = models.ForeignKey(
         DeciphonUser, on_delete=models.DO_NOTHING, related_name="jobs", db_column="user"
     )
@@ -87,7 +98,7 @@ class Job(DeciphonModel):
 
 class Query(DeciphonModel):
     name = models.CharField(max_length=255)
-    query = models.TextField()
+    seq = models.TextField()
     job = models.ForeignKey(
         Job, on_delete=models.DO_NOTHING, related_name="queries", db_column="job"
     )

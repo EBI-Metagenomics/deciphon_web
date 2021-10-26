@@ -19,9 +19,17 @@ class DeciphonUserAdmin(admin.ModelAdmin):
     list_display = ("id", "username", "name")
 
 
+class QueryInline(admin.TabularInline):
+    model = Query
+    extra = 0
+
+
 @admin.register(Job)
 class JobAdmin(admin.ModelAdmin):
-    list_display = ("id", "sid", "status")
+    def query_count(self, obj):
+        return obj.queries.count()
+
+    list_display = ("id", "sid", "status", "query_count")
     list_filter = (
         "status",
         "multiple_hits",
@@ -33,6 +41,9 @@ class JobAdmin(admin.ModelAdmin):
         "exec_started",
         "exec_ended",
     )
+    inlines = [
+        QueryInline,
+    ]
 
 
 @admin.register(Query)

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static unicorn %}
+
+{% block content %}
+    <h1>Query Deciphon</h1>
+    {% comment %}
+        {# We render the Nighintgale textarea-sequence outside Unicorn components, due to re-rendering breaking it #}
+    {% endcomment %}
+
+    <h2>Enter a query</h2>
+    <textarea-sequence
+      id="queryText"
+      height="10em"
+      min-sequence-length="5"
+      single="false"
+      alphabet="actgu"
+    ></textarea-sequence>
+
+    {% unicorn 'deciphon.components.submit_job.SubmitJobView' %}
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/textarea-sequence@latest"
+      defer
+    ></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("queryText").formatSequence = (x) => x;
+        });
+    </script>
+{% endblock %}
