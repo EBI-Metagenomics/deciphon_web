@@ -113,7 +113,7 @@ class InterfaceTests(StaticLiveServerTestCase):
         super().setUpClass()
         options = Options()
         options.headless = True
-        prefs = {'download.default_directory': settings.BASE_DIR + '/downloads'}
+        prefs = {'download.default_directory': str(os.path.join(settings.BASE_DIR, 'downloads'))}
         options.add_experimental_option('prefs', prefs)
         cls.selenium = WebDriver(options=options)
         cls.selenium.implicitly_wait(10)
