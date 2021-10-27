@@ -1,6 +1,10 @@
+import os
+
 import pytest
 from Bio.SeqRecord import SeqRecord
-from django.test import TestCase, LiveServerTestCase
+from django.conf import settings
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.test import TestCase
 from selenium.webdriver import Keys, ActionChains
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -103,12 +107,14 @@ class TestAlphabetDetection(DeciphonTestCase):
 
 
 @pytest.mark.django_db
-class InterfaceTests(LiveServerTestCase):
+class InterfaceTests(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         options = Options()
         options.headless = True
+        prefs = {'download.default_directory': str(os.path.join(settings.BASE_DIR, 'downloads'))}
+        options.add_experimental_option('prefs', prefs)
         cls.selenium = WebDriver(options=options)
         cls.selenium.implicitly_wait(10)
 
@@ -149,31 +155,33 @@ class InterfaceTests(LiveServerTestCase):
         wait = WebDriverWait(self.selenium, 10)
 
         # Dismiss GDPR banner
-        self.selenium.find_element(By.ID, 'data-protection-agree').click()
+        self.selenium.find_element(By.ID, "data-protection-agree").click()
 
-        query_input_component = self.selenium.find_element(By.ID, 'queryText')
-        query_input = query_input_component.find_element(By.XPATH, '//div[@contenteditable="true"]')
-        submit_button = self.selenium.find_element(By.ID, 'submit')
+        query_input_component = self.selenium.find_element(By.ID, "queryText")
+        query_input = query_input_component.find_element(
+            By.XPATH, '//div[@contenteditable="true"]'
+        )
+        submit_button = self.selenium.find_element(By.ID, "submit")
 
         # Submit button disabled at first
         self.assertFalse(submit_button.is_enabled())
 
         # Enter a DNA sequence
         query_input.click()
-        query_input.send_keys('actg actg hello')
+        query_input.send_keys("actg actg hello")
 
         # Test the sequence cleanup
-        self.selenium.find_element(By.ID, 'check-query').click()
+        self.selenium.find_element(By.ID, "check-query").click()
         self.assertIn("Generated Header", query_input.text)
         self.assertIn("actgactg", query_input.text)
-        self.assertNotIn('hello', query_input.text)
+        self.assertNotIn("hello", query_input.text)
 
         # Auto detected alphabet
-        selected_alphabet = self.selenium.find_element(By.ID, 'alphabet-select')
-        self.assertEqual(str(self.dna.id), selected_alphabet.get_attribute('value'))
+        selected_alphabet = self.selenium.find_element(By.ID, "alphabet-select")
+        self.assertEqual(str(self.dna.id), selected_alphabet.get_attribute("value"))
 
-        target_radio = self.selenium.find_element(By.ID, f'target_{self.target.id}')
-        wait.until(expected_conditions.element_to_be_selected(target_radio))
+        target_radio = self.selenium.find_element(By.ID, f"target_{self.target.id}")
+        self.assertTrue(target_radio.is_selected())
 
         # Submit button enabled
         self.assertTrue(submit_button.is_enabled())
@@ -181,45 +189,56 @@ class InterfaceTests(LiveServerTestCase):
         # Enter an RNA
         query_input.click()
         query_input.clear()
-        query_input.send_keys('> RNAQUERY')
+        query_input.send_keys("> RNAQUERY")
         query_input.send_keys(Keys.RETURN)
-        query_input.send_keys('acgu acgu rna now')
-        self.selenium.find_element(By.ID, 'check-query').click()
+        query_input.send_keys("acgu acgu rna now")
+        self.selenium.find_element(By.ID, "check-query").click()
         self.assertIn("> RNAQUERY", query_input.text)
         self.assertIn("acguacgu", query_input.text)
-        self.assertNotIn('now', query_input.text)
+        self.assertNotIn("now", query_input.text)
 
         # alphabet should change
-        self.assertEqual(str(self.rna.id), selected_alphabet.get_attribute('value'))
+        self.assertEqual(str(self.rna.id), selected_alphabet.get_attribute("value"))
         self.assertTrue(submit_button.is_enabled())
         ActionChains(self.selenium).move_to_element(submit_button).perform()
         submit_button.click()
 
         # Should be forwarded to result page
-        wait.until(expected_conditions.url_contains('/result/'))
+        wait.until(expected_conditions.url_contains("/result/"))
 
-        job = Job.objects.order_by('-id').first()
+        job = Job.objects.order_by("-id").first()
         self.assertIsNotNone(job)
 
         self.assertIn(job.sid, self.selenium.current_url)
 
-        self.assertIn('Job is pending', self.selenium.find_element(By.TAG_NAME, 'body').text)
+        self.assertIn(
+            "Job is pending", self.selenium.find_element(By.TAG_NAME, "body").text
+        )
 
         job.status = Job.RUNNING
         job.save()
 
-        wait.until(expected_conditions.text_to_be_present_in_element((By.TAG_NAME, 'body'), 'Job is running'))
+        wait.until(
+            expected_conditions.text_to_be_present_in_element(
+                (By.TAG_NAME, "body"), "Job is running"
+            )
+        )
 
         Result.objects.create(
-            job=job,
-            amino_faa=AMINO_FAA,
-            codon_fna=CODON_FNA,
-            output_gff=GFF_OUTPUT
+            job=job, amino_faa=AMINO_FAA, codon_fna=CODON_FNA, output_gff=GFF_OUTPUT
         )
         job.status = Job.DONE
         job.save()
-        wait.until(expected_conditions.text_to_be_present_in_element((By.TAG_NAME, 'body'), 'Job complete'))
+        wait.until(
+            expected_conditions.text_to_be_present_in_element(
+                (By.TAG_NAME, "body"), "Job complete"
+            )
+        )
 
-        for link in ['Download GFF', 'Download FNA', 'Download FAA']:
+        # Files should be downloaded
+        for link in ["Download GFF", "Download FNA", "Download FAA"]:
             link = self.selenium.find_element(By.LINK_TEXT, link)
             link.click()
+
+        for file_format in ['gff', 'fna', 'faa']:
+            self.assertTrue(os.path.isfile(f'{settings.BASE_DIR}/downloads/{job.sid}-1.{file_format}'))
