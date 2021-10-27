@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from Bio.SeqRecord import SeqRecord
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -230,6 +232,10 @@ class InterfaceTests(StaticLiveServerTestCase):
             )
         )
 
+        # Files should be downloaded
         for link in ["Download GFF", "Download FNA", "Download FAA"]:
             link = self.selenium.find_element(By.LINK_TEXT, link)
             link.click()
+
+        for file_format in ['gff', 'fna', 'faa']:
+            self.assertTrue(os.path.isfile(f'/home/runner/downloads/{job.sid}-1.{file_format}'))
