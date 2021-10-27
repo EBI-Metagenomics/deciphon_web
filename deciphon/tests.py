@@ -2,6 +2,7 @@ import os
 
 import pytest
 from Bio.SeqRecord import SeqRecord
+from django.conf import settings
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import TestCase
 from selenium.webdriver import Keys, ActionChains
@@ -112,6 +113,8 @@ class InterfaceTests(StaticLiveServerTestCase):
         super().setUpClass()
         options = Options()
         options.headless = True
+        prefs = {'download.default_directory': settings.BASE_DIR + '/downloads'}
+        options.add_experimental_option('prefs', prefs)
         cls.selenium = WebDriver(options=options)
         cls.selenium.implicitly_wait(10)
 
@@ -238,4 +241,4 @@ class InterfaceTests(StaticLiveServerTestCase):
             link.click()
 
         for file_format in ['gff', 'fna', 'faa']:
-            self.assertTrue(os.path.isfile(f'/home/runner/downloads/{job.sid}-1.{file_format}'))
+            self.assertTrue(os.path.isfile(f'{settings.BASE_DIR}/downloads/{job.sid}-1.{file_format}'))
