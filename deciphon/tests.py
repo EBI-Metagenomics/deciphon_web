@@ -2,6 +2,7 @@ import pytest
 from Bio.SeqRecord import SeqRecord
 from django.test import TestCase, LiveServerTestCase
 from selenium.webdriver import Keys, ActionChains
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
@@ -106,7 +107,9 @@ class InterfaceTests(LiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.selenium = WebDriver()
+        options = Options()
+        options.headless = True
+        cls.selenium = WebDriver(options=options)
         cls.selenium.implicitly_wait(10)
 
     @classmethod
@@ -143,12 +146,13 @@ class InterfaceTests(LiveServerTestCase):
 
     def test_query(self):
         self.selenium.get(self.live_server_url)
+        wait = WebDriverWait(self.selenium, 10)
 
         # Dismiss GDPR banner
         self.selenium.find_element(By.ID, 'data-protection-agree').click()
 
         query_input_component = self.selenium.find_element(By.ID, 'queryText')
-        query_input = query_input_component.find_element_by_xpath('//div[@contenteditable="true"]')
+        query_input = query_input_component.find_element(By.XPATH, '//div[@contenteditable="true"]')
         submit_button = self.selenium.find_element(By.ID, 'submit')
 
         # Submit button disabled at first
@@ -192,7 +196,7 @@ class InterfaceTests(LiveServerTestCase):
         submit_button.click()
 
         # Should be forwarded to result page
-        self.assertIn('/result/', self.selenium.current_url)
+        wait.until(expected_conditions.url_contains('/result/'))
 
         job = Job.objects.order_by('-id').first()
         self.assertIsNotNone(job)
@@ -203,8 +207,6 @@ class InterfaceTests(LiveServerTestCase):
 
         job.status = Job.RUNNING
         job.save()
-
-        wait = WebDriverWait(self.selenium, 10)
 
         wait.until(expected_conditions.text_to_be_present_in_element((By.TAG_NAME, 'body'), 'Job is running'))
 
