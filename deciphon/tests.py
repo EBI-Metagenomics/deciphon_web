@@ -173,7 +173,7 @@ class InterfaceTests(LiveServerTestCase):
         self.assertEqual(str(self.dna.id), selected_alphabet.get_attribute('value'))
 
         target_radio = self.selenium.find_element(By.ID, f'target_{self.target.id}')
-        self.assertTrue(target_radio.is_selected())
+        wait.until(expected_conditions.element_to_be_selected(target_radio))
 
         # Submit button enabled
         self.assertTrue(submit_button.is_enabled())
