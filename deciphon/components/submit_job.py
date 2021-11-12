@@ -9,7 +9,7 @@ from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
 from django_unicorn.components import UnicornView
 
-from deciphon.models import Alphabet, Query, Job, Target, DeciphonUser
+from deciphon.models import ALPHABETS, QuerySequence, Job, TargetDb, DNA
 from deciphon.utils import create_memorable_job_name, alphabet_of_seqrecord
 
 
@@ -26,14 +26,13 @@ class SubmitJobView(UnicornView):
     _seqs: List[SeqRecord] = []
 
     def mount(self):
-        self.alphabet_options = Alphabet.objects.all()
-        self.target_options = Target.objects.all()
+        self.alphabet_options = ALPHABETS
+        self.target_options = TargetDb.objects.all()
         default_target = self.target_options.first()
-        default_alphabet = self.alphabet_options.first()
+        default_alphabet = DNA
         if default_target:
             self.target_selected = str(default_target.id)
-        if default_alphabet:
-            self.alphabet_selected = str(default_alphabet.id)
+        self.alphabet_selected = default_alphabet.name
 
     def can_submit(self):
         return (
@@ -54,23 +53,17 @@ class SubmitJobView(UnicornView):
         except (AssertionError, IndexError):
             self.alphabet_selected = None
         else:
-            self.alphabet_selected = str(alphabet.id)
+            self.alphabet_selected = alphabet.name
 
     def submit(self):
         if not self.can_submit():
             return
 
-        user = DeciphonUser.sentinels.first()
-        if not user:
-            raise Http404()
-
         job_name = create_memorable_job_name()
 
         with transaction.atomic():
             job = Job.objects.create(
-                target_id=self.target_selected,
-                abc_id=self.alphabet_selected,
-                user=user,
+                target_db_id=self.target_selected,
                 sid=job_name,
             )
             for sequence in self._seqs:
@@ -79,6 +72,6 @@ class SubmitJobView(UnicornView):
                     if sequence.name == "Generated" and sequence.description is not None
                     else sequence.name
                 )
-                job.queries.create(name=best_query_name, seq=sequence.seq)
+                job.queries.create(name=best_query_name, data=sequence.seq)
 
         return HttpResponseRedirect(reverse("result", args=(job_name,)))

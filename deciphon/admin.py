@@ -1,26 +1,16 @@
 from django.contrib import admin
 
 # Register your models here.
-from deciphon.models import Alphabet, Target, DeciphonUser, Job, Query, Result
+from deciphon.models import TargetDb, Job, QuerySequence, Result
 
 
-@admin.register(Alphabet)
-class AlphabetAdmin(admin.ModelAdmin):
-    list_display = ("id", "name")
-
-
-@admin.register(Target)
+@admin.register(TargetDb)
 class TargetAdmin(admin.ModelAdmin):
     list_display = ("id", "name")
 
 
-@admin.register(DeciphonUser)
-class DeciphonUserAdmin(admin.ModelAdmin):
-    list_display = ("id", "username", "name")
-
-
 class QueryInline(admin.TabularInline):
-    model = Query
+    model = QuerySequence
     extra = 0
 
 
@@ -29,24 +19,24 @@ class JobAdmin(admin.ModelAdmin):
     def query_count(self, obj):
         return obj.queries.count()
 
-    list_display = ("id", "sid", "status", "query_count")
-    list_filter = (
-        "status",
-        "multiple_hits",
-        "hmmer3_compat",
-        "abc",
-        "target",
-        "user",
-        "submission",
-        "exec_started",
-        "exec_ended",
-    )
+    list_display = ("id", "state", "query_count")
+    # list_filter = (
+    #     "status",
+    #     "multiple_hits",
+    #     "hmmer3_compat",
+    #     "abc",
+    #     "target",
+    #     "user",
+    #     "submission",
+    #     "exec_started",
+    #     "exec_ended",
+    # )
     inlines = [
         QueryInline,
     ]
 
 
-@admin.register(Query)
+@admin.register(QuerySequence)
 class QueryAdmin(admin.ModelAdmin):
     list_display = ("id", "name")
 

@@ -12,7 +12,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 
-from deciphon.models import DeciphonUser, Job, Target, Alphabet, Result
+from deciphon.models import DeciphonUser, Job, TargetDb, Alphabet, Result
 from deciphon.test_result_fixtures import AMINO_FAA, CODON_FNA, GFF_OUTPUT
 from deciphon.utils import create_memorable_job_name, alphabet_of_seqrecord
 
@@ -42,7 +42,7 @@ class TestJobNaming(DeciphonTestCase):
         self.user = DeciphonUser.objects.create(
             username="sentinel", name="Sentinel User"
         )
-        self.target = Target.objects.create(
+        self.target = TargetDb.objects.create(
             name="trekkersdb", filepath="/to/boldly/go", xxh3=111111
         )
         self.alphabet = Alphabet.objects.create(
@@ -146,7 +146,7 @@ class InterfaceTests(StaticLiveServerTestCase):
         self.user = DeciphonUser.objects.create(
             username="sentinel", name="Sentinel User"
         )
-        self.target = Target.objects.create(
+        self.target = TargetDb.objects.create(
             name="trekkersdb", filepath="/to/boldly/go", xxh3=111111
         )
 

@@ -77,7 +77,7 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name="Query",
+            name="QuerySequence",
             fields=[
                 ("id", models.AutoField(primary_key=True, serialize=False)),
                 ("name", models.CharField(max_length=255)),
@@ -104,7 +104,7 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name="Target",
+            name="TargetDb",
             fields=[
                 ("id", models.AutoField(primary_key=True, serialize=False)),
                 ("name", models.CharField(max_length=255)),

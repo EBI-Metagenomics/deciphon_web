@@ -1,3 +1,4 @@
+import dataclasses
 from typing import Optional
 
 import randomname
@@ -5,7 +6,7 @@ import uuid
 
 from Bio.SeqRecord import SeqRecord
 
-from deciphon.models import Job, Alphabet
+from deciphon.models import Job, ALPHABETS, Alphabet
 
 
 def create_memorable_job_name():
@@ -23,6 +24,6 @@ def alphabet_of_seqrecord(record: SeqRecord) -> Optional[Alphabet]:
     :return: An Alphabet object or None if no match found.
     """
     chars_user = set(record.seq)
-    for alphabet in Alphabet.objects.all():
+    for alphabet in ALPHABETS:
         if chars_user.issubset(set(alphabet.symbols)):
             return alphabet

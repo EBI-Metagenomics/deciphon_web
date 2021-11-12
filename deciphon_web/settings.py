@@ -9,11 +9,21 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
+import logging
 import os
 from pathlib import Path
+import yaml
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+CONFIG_FILE = os.getenv("DECIPHON_WEB_CONFIG")
+if CONFIG_FILE:
+    with open('config.yml', 'r') as cf:
+        deciphon_config = yaml.safe_load(cf)
+else:
+    logging.warning("No DECIPHON_WEB_CONFIG env var was set, so not using any config file.")
+    deciphon_config = {}
 
 
 # Quick-start development settings - unsuitable for production
@@ -23,9 +33,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DJANGO_DEBUG", False) == "True"
+DEBUG = deciphon_config.get('debug', False)
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = deciphon_config.get('allowed_hosts', ["localhost", "127.0.0.1"])
 
 
 # Application definition
@@ -78,15 +88,15 @@ WSGI_APPLICATION = "deciphon_web.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.getenv(
-            "DJANGO_DB_LOCATION",
+        "NAME": deciphon_config.get(
+            "django_db_location",
             BASE_DIR / "databases/django.db",
         ),
     },
     "deciphon": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.getenv(
-            "DECIPHON_DB_LOCATION",
+        "NAME": deciphon_config.get(
+            "deciphon_db_location",
             BASE_DIR / "databases/deciphon.db",
         ),
     },
