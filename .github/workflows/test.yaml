@@ -22,3 +22,5 @@ jobs:
         path: test-results
     - name: upload coverage to Codecov
       uses: codecov/codecov-action@v2
+      with:
+        files: ./test-results/coverage.xml
