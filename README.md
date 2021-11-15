@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/EBI-Metagenomics/deciphon_web/branch/master/graph/badge.svg?token=X15S9LH10H)](https://codecov.io/gh/EBI-Metagenomics/deciphon_web)
+
 # Deciphon Web
 The web server and client for submitting queries to [Deciphon](https://github.com/EBI-Metagenomics/deciphon).
 
