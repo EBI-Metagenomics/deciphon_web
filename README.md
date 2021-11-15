@@ -1,3 +1,4 @@
+![unit tests](https://github.com/EBI-Metagenomics/deciphon_web/actions/workflows/test.yaml/badge.svg)
 [![codecov](https://codecov.io/gh/EBI-Metagenomics/deciphon_web/branch/master/graph/badge.svg?token=X15S9LH10H)](https://codecov.io/gh/EBI-Metagenomics/deciphon_web)
 
 # Deciphon Web
