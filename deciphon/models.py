@@ -30,7 +30,7 @@ class Alphabet:
 
 
 DNA = Alphabet(name="dna_iupac", display_name="DNA", symbols="actg")
-RNA = Alphabet(name="rna_iupac", display_name="RNA", symbols="actu")
+RNA = Alphabet(name="rna_iupac", display_name="RNA", symbols="acug")
 
 
 class TargetDb(DeciphonModel):
@@ -135,10 +135,6 @@ class Result(DeciphonModel):
     model = models.CharField(max_length=10)
     version = models.CharField(max_length=10)
     match_data = models.TextField()
-
-    # amino_faa = models.TextField()
-    # codon_fna = models.TextField()
-    # output_gff = models.TextField()
 
     class Meta(DeciphonModel.Meta):
         db_table = "prod"

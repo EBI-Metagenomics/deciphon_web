@@ -21,5 +21,5 @@ class SubmittedJobAdmin(admin.ModelAdmin):
         else:
             return "⚠️"
 
-    list_display = ("id", "deciphon_job_exists", "deciphon_job_link")
-    list_filter = ("id",)
+    list_display = ("id", "deciphon_job_exists", "deciphon_job_link", "created")
+    list_filter = ("id", "created", )

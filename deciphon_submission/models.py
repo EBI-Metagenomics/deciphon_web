@@ -13,6 +13,7 @@ class SubmittedJob(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     job_id = models.IntegerField()
+    created = models.DateTimeField(auto_now=True)
 
     @property
     def job(self):

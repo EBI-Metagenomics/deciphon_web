@@ -20,3 +20,5 @@ jobs:
       with:
         name: pytest-coverage
         path: test-results
+    - name: upload coverage to Codecov
+      uses: codecov/codecov-action@v2
