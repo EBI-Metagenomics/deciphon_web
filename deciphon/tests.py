@@ -70,7 +70,7 @@ class InterfaceTests(StaticLiveServerTestCase):
     def setUpClass(cls):
         super().setUpClass()
         options = Options()
-        options.headless = False
+        options.headless = True
         prefs = {
             "download.default_directory": str(
                 os.path.join(settings.BASE_DIR, "downloads")
