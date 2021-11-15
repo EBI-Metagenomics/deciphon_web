@@ -25,14 +25,20 @@ A [Django DB Router](https://docs.djangoproject.com/en/3.2/topics/db/multi-db/#m
 - Check out the repository.
 - Create and activate a virtualenv or conda env for the project.
 - `pip install -r requirements.txt`
+- `export DJANGO_SECRET_KEY=<anythingyoulike>`
+- `export DECIPHON_WEB_CONFIG=configs/local.yaml`
 - `python manage.py migrate`
 - `python manage.py collectstatic --noinput`
 - `python manage.py runserver 8000`
 
+You can create a new `config.yaml` or modify `configs/local.yaml` to point at different sqlite db files.
+E.g. set `django_db_location: /path/to/wherever/deciphon/is/running/deciphon.db`
+
+
 ## Admin interface
 The app has Django Admin installed, so you can browse the database models.
 - `python manage.py createsuperuser`
-- [log in to the admin console](127.0.0.1:8000/admin)
+- [log in to the admin console](http://127.0.0.1:8000/admin)
 
 ## Style
 Use [Black](https://black.rtfd.io) to format code before committing.
