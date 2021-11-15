@@ -1,5 +1,6 @@
 .idea/
 databases/
+downloads/
 static_files/
 test-results/
 .pytest_cache/
