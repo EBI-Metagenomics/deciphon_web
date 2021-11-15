@@ -1,22 +1,23 @@
 from io import StringIO
 from typing import List, Optional
 
-from Bio.SeqRecord import SeqRecord
 from Bio import SeqIO
+from Bio.SeqRecord import SeqRecord
 from django.db import transaction
 from django.db.models import QuerySet
-from django.http import Http404, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django_unicorn.components import UnicornView
 
-from deciphon.models import ALPHABETS, QuerySequence, Job, TargetDb, DNA
-from deciphon.utils import create_memorable_job_name, alphabet_of_seqrecord
+from deciphon.models import ALPHABETS, Job, TargetDb, DNA
+from deciphon.utils import alphabet_of_seqrecord
+from deciphon_submission.models import SubmittedJob
 
 
 class SubmitJobView(UnicornView):
     template_name = "unicorn/submit-job.html"
 
-    alphabet_options: QuerySet = None
+    alphabet_options: List = None
     target_options: QuerySet = None
 
     alphabet_selected: Optional[str] = None
@@ -59,13 +60,11 @@ class SubmitJobView(UnicornView):
         if not self.can_submit():
             return
 
-        job_name = create_memorable_job_name()
-
         with transaction.atomic():
             job = Job.objects.create(
                 target_db_id=self.target_selected,
-                sid=job_name,
             )
+            submitted_job = SubmittedJob.objects.create(job_id=job.id)
             for sequence in self._seqs:
                 best_query_name = (
                     sequence.description
@@ -74,4 +73,4 @@ class SubmitJobView(UnicornView):
                 )
                 job.queries.create(name=best_query_name, data=sequence.seq)
 
-        return HttpResponseRedirect(reverse("result", args=(job_name,)))
+        return HttpResponseRedirect(reverse("result", args=(submitted_job.id,)))

@@ -113,8 +113,12 @@ class InterfaceTests(StaticLiveServerTestCase):
         super().setUpClass()
         options = Options()
         options.headless = True
-        prefs = {'download.default_directory': str(os.path.join(settings.BASE_DIR, 'downloads'))}
-        options.add_experimental_option('prefs', prefs)
+        prefs = {
+            "download.default_directory": str(
+                os.path.join(settings.BASE_DIR, "downloads")
+            )
+        }
+        options.add_experimental_option("prefs", prefs)
         cls.selenium = WebDriver(options=options)
         cls.selenium.implicitly_wait(10)
 
@@ -240,5 +244,9 @@ class InterfaceTests(StaticLiveServerTestCase):
             link = self.selenium.find_element(By.LINK_TEXT, link)
             link.click()
 
-        for file_format in ['gff', 'fna', 'faa']:
-            self.assertTrue(os.path.isfile(f'{settings.BASE_DIR}/downloads/{job.sid}-1.{file_format}'))
+        for file_format in ["gff", "fna", "faa"]:
+            self.assertTrue(
+                os.path.isfile(
+                    f"{settings.BASE_DIR}/downloads/{job.sid}-1.{file_format}"
+                )
+            )

@@ -20,17 +20,12 @@ class JobAdmin(admin.ModelAdmin):
         return obj.queries.count()
 
     list_display = ("id", "state", "query_count")
-    # list_filter = (
-    #     "status",
-    #     "multiple_hits",
-    #     "hmmer3_compat",
-    #     "abc",
-    #     "target",
-    #     "user",
-    #     "submission",
-    #     "exec_started",
-    #     "exec_ended",
-    # )
+    list_filter = (
+        "state",
+        "multi_hits",
+        "hmmer3_compat",
+        "target_db",
+    )
     inlines = [
         QueryInline,
     ]
@@ -38,9 +33,9 @@ class JobAdmin(admin.ModelAdmin):
 
 @admin.register(QuerySequence)
 class QueryAdmin(admin.ModelAdmin):
-    list_display = ("id", "name")
+    list_display = ("id", "name", "job")
 
 
 @admin.register(Result)
 class ResultAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("id", "job", "seq", "match_id", "prof_name", "model")

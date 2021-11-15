@@ -19,10 +19,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 CONFIG_FILE = os.getenv("DECIPHON_WEB_CONFIG")
 if CONFIG_FILE:
-    with open('config.yml', 'r') as cf:
+    with open(CONFIG_FILE, "r") as cf:
         deciphon_config = yaml.safe_load(cf)
 else:
-    logging.warning("No DECIPHON_WEB_CONFIG env var was set, so not using any config file.")
+    logging.warning(
+        "No DECIPHON_WEB_CONFIG env var was set, so not using any config file."
+    )
     deciphon_config = {}
 
 
@@ -33,9 +35,9 @@ else:
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = deciphon_config.get('debug', False)
+DEBUG = deciphon_config.get("debug", False)
 
-ALLOWED_HOSTS = deciphon_config.get('allowed_hosts', ["localhost", "127.0.0.1"])
+ALLOWED_HOSTS = deciphon_config.get("allowed_hosts", ["localhost", "127.0.0.1"])
 
 
 # Application definition
@@ -49,6 +51,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_unicorn",
     "deciphon.apps.DeciphonConfig",
+    "deciphon_submission.apps.DeciphonSubmissionConfig",
 ]
 
 MIDDLEWARE = [

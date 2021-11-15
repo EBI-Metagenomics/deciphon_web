@@ -9,7 +9,7 @@ class DeciphonRouter:
     }
 
     def is_unmanaged_deciphon(self, model):
-        return model._meta.app_label in self.deciphon_app_labels and (not hasattr(model, 'DWMeta') or (hasattr(model.DWMeta, "deciphon_managed") and not model.DWMeta.deciphon_managed))
+        return model._meta.app_label in self.deciphon_app_labels
 
     def db_for_read(self, model, **hints):
         if self.is_unmanaged_deciphon(model):
@@ -26,10 +26,7 @@ class DeciphonRouter:
         Explicitly allow relations between deciphon models. Otherwise let Django figure it out.
         Cross-database relations are generally not supported.
         """
-        if (
-            self.is_unmanaged_deciphon(obj1)
-            or self.is_unmanaged_deciphon(obj2)
-        ):
+        if self.is_unmanaged_deciphon(obj1) or self.is_unmanaged_deciphon(obj2):
             return True
         return None
 

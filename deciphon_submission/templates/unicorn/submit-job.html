@@ -18,7 +18,7 @@
                     <label class="vf-form__label" for="alphabet-select">Query language</label>
                     <select class="vf-form__select" id="alphabet-select" unicorn:model="alphabet_selected">
                         {% for alphabet in alphabet_options %}
-                            <option value="{{ alphabet.id }}">
+                            <option value="{{ alphabet.name }}">
                                 {{ alphabet.name|upper }} ({{ alphabet.symbols }})
                             </option>
                         {% endfor %}
@@ -63,12 +63,12 @@
                 {# Replace newlines with a char, to work around a bug in Unicorn #}
             {% endcomment %}
             sequence =  sequence.replace(/(\n)+/g, '⏎');
-            await Unicorn.call('deciphon.components.submit_job.SubmitJobView', 'detect_sequence', sequence);
+            await Unicorn.call('deciphon_submission.components.submit_job.SubmitJobView', 'detect_sequence', sequence);
         }
 
         async function submit() {
             await cleanUpAndStage();
-            await Unicorn.call('deciphon.components.submit_job.SubmitJobView', 'submit');
+            await Unicorn.call('deciphon_submission.components.submit_job.SubmitJobView', 'submit');
         }
 
     </script>

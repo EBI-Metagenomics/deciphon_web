@@ -1,7 +1,6 @@
 Django==3.2.5
 black==21.9b0
 django-unicorn==0.36.1
-randomname==0.1.5
 biopython==1.79
 pytest==6.2.5
 pytest-django==4.4.0

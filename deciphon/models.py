@@ -1,10 +1,10 @@
 import dataclasses
+import time
 
 from django.conf import settings
 from django.db import models
-from django.shortcuts import get_object_or_404
 
-from deciphon.result_utils import make_gff
+from deciphon.result_utils import make_gff, make_fasta
 
 
 class DeciphonModel(models.Model):
@@ -29,8 +29,8 @@ class Alphabet:
         ALPHABETS.append(self)
 
 
-DNA = Alphabet(name='dna_iupac', display_name='DNA', symbols='actg')
-RNA = Alphabet(name='rna_iupac', display_name='RNA', symbols='actu')
+DNA = Alphabet(name="dna_iupac", display_name="DNA", symbols="actg")
+RNA = Alphabet(name="rna_iupac", display_name="RNA", symbols="actu")
 
 
 class TargetDb(DeciphonModel):
@@ -44,12 +44,26 @@ class TargetDb(DeciphonModel):
         return self.name or str(self.id)
 
 
+class TimestampField(models.IntegerField):
+    def __init__(self, *args, **kwargs):
+        self.auto_now = kwargs.pop("auto_now", False)
+        super().__init__(*args, **kwargs)
+
+    def pre_save(self, model_instance, add):
+        if self.auto_now:
+            value = time.time()
+            setattr(model_instance, self.attname, value)
+            return value
+        else:
+            return super().pre_save(model_instance, add)
+
+
 class Job(DeciphonModel):
     PENDING = "pend"
     RUNNING = "run"
     DONE = "done"
     FAILED = "fail"
-    STATUSES = [
+    STATES = [
         (PENDING, "Pending"),
         (RUNNING, "Running"),
         (DONE, "Done"),
@@ -60,15 +74,27 @@ class Job(DeciphonModel):
     target_db = models.ForeignKey(
         TargetDb, on_delete=models.DO_NOTHING, related_name="jobs", db_column="db_id"
     )
-    state = models.CharField(max_length=10, choices=STATUSES, default="pend")
-    error = models.CharField(max_length=255, null=True, blank=True)
-    # submission = models.DateTimeField(auto_now=True)
-    # exec_started = models.DateTimeField(null=True, blank=True)
-    # exec_ended = models.DateTimeField(null=True, blank=True)
+    state = models.CharField(max_length=10, choices=STATES, default="pend")
+    error = models.CharField(max_length=255, blank=True, default="")
+    submission = TimestampField(auto_now=True)
+    exec_started = TimestampField(default=0)
+    exec_ended = TimestampField(default=0)
 
     @property
     def gff(self):
         return make_gff(self)
+
+    @property
+    def amino_faa(self):
+        return make_fasta(self, "amino")
+
+    @property
+    def codon_fna(self):
+        return make_fasta(self, "codon")
+
+    @property
+    def frag_fasta(self):
+        return make_fasta(self, "frag")
 
     class Meta(DeciphonModel.Meta):
         db_table = "job"
@@ -96,7 +122,10 @@ class Result(DeciphonModel):
         Job, on_delete=models.DO_NOTHING, related_name="results", db_column="job_id"
     )
     seq = models.ForeignKey(
-        QuerySequence, on_delete=models.DO_NOTHING, related_name="results", db_column="seq_id"
+        QuerySequence,
+        on_delete=models.DO_NOTHING,
+        related_name="results",
+        db_column="seq_id",
     )
     match_id = models.IntegerField()
     prof_name = models.CharField(max_length=255)
@@ -113,15 +142,3 @@ class Result(DeciphonModel):
 
     class Meta(DeciphonModel.Meta):
         db_table = "prod"
-
-
-class SubmittedJob(models.Model):
-    sid = models.UUIDField(primary_key=True)
-    job_id = models.IntegerField()
-
-    @property
-    def job(self):
-        return get_object_or_404(Job, self.job_id)
-
-    class DWMeta:
-        deciphon_managed = False
