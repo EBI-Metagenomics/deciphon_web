@@ -10,3 +10,4 @@ pytest-env==0.6.2
 selenium==4.0.0
 PyYAML==6.0
 bcbio-gff==0.6.8
+djangorestframework==3.12.4

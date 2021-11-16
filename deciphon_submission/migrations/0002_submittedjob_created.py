@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('deciphon_submission', '0001_initial'),
+        ("deciphon_submission", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='submittedjob',
-            name='created',
+            model_name="submittedjob",
+            name="created",
             field=models.DateTimeField(auto_now=True),
         ),
     ]

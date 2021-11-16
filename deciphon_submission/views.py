@@ -2,8 +2,12 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView, DetailView
 from django.views.generic.detail import BaseDetailView
+from rest_framework import viewsets, mixins
 
+from deciphon.models import TargetDb
+from deciphon.serializers import TargetDbSerializer
 from deciphon_submission.models import SubmittedJob
+from deciphon_submission.serializers import SubmittedJobSerializer
 
 
 class IndexView(TemplateView):
@@ -59,3 +63,17 @@ class ResultDownloadView(BaseDetailView):
                 },
             )
             return response
+
+
+class RestJobView(
+    viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.RetrieveModelMixin
+):
+    queryset = SubmittedJob.objects.all()
+    serializer_class = SubmittedJobSerializer
+    permission_classes = []
+
+
+class RestTargetDbView(viewsets.ReadOnlyModelViewSet):
+    queryset = TargetDb.objects.all()
+    serializer_class = TargetDbSerializer
+    permission_classes = []

@@ -5,6 +5,7 @@ from Bio.SeqRecord import SeqRecord
 from django.conf import settings
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import TestCase
+from rest_framework.test import APIRequestFactory, APITestCase
 from selenium.webdriver import Keys, ActionChains
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -38,21 +39,90 @@ class TestAlphabetDetection(DeciphonTestCase):
         self.assertIsNone(alphabet)
 
 
+@pytest.mark.django_db
+class TestRestAPI(APITestCase):
+    maxDiff = 5000
 
+    def setUp(self) -> None:
+        self.target_db = TargetDb.objects.create(
+            name="pdb", filepath="/stairway/to/heaven"
+        )
+
+    def test_submit_api_job(self):
+        request = self.client.post("/rest/jobs", {}, format="json")
+        self.assertEqual(request.status_code, 400)
+
+        request = self.client.post(
+            "/rest/jobs",
+            {
+                "job": {
+                    "target_db": {"id": 1},
+                    "queries": [{"name": "apiquery", "data": "actgactg"}],
+                }
+            },
+            format="json",
+        )
+        self.assertEqual(request.status_code, 201)
+        latest_submitted_job = SubmittedJob.objects.order_by("-created").first()
+        jid = str(latest_submitted_job.id)
+
+        expected = {
+            "id": jid,
+            "job": {
+                "error": "",
+                "state": Job.PENDING,
+                "target_db": {"id": 1, "name": "pdb"},
+                "queries": [{"data": "actgactg", "job": 1, "name": "apiquery"}],
+            },
+            "result_urls": {
+                "amino_faa": f"/result/{jid}/download/faa",
+                "codon_fna": f"/result/{jid}/download/fna",
+                "gff": f"/result/{jid}/download/gff",
+            },
+        }
+
+        self.assertEqual(request.json(), expected)
+
+        # Can fetch Job detail
+        request = self.client.get(f"/rest/jobs/{jid}")
+        self.assertEqual(request.status_code, 200)
+        self.assertDictEqual(request.json(), expected)
+
+        # Can submit using target db name instead of ID
+        request = self.client.post(
+            "/rest/jobs",
+            {
+                "job": {
+                    "target_db": {"name": "pdb"},
+                    "queries": [{"name": "apiquery", "data": "actgactg"}],
+                }
+            },
+            format="json",
+        )
+        self.assertEqual(request.status_code, 201)
+
+        # Cannot list all jobs
+        request = self.client.get(f"/rest/jobs")
+        self.assertEqual(request.status_code, 405)
+
+    def test_listing_target_dbs(self):
+        request = self.client.get("/rest/dbs")
+        self.assertEqual(request.status_code, 200)
+        self.assertEqual(request.json(), [{"id": 1, "name": "pdb"}])
 
 
 @pytest.mark.django_db
 class TestResultsFiles(DeciphonTestCase):
     def setUp(self) -> None:
-        self.target_db = TargetDb.objects.create(name='pdb', filepath='/stairway/to/heaven')
+        self.target_db = TargetDb.objects.create(
+            name="pdb", filepath="/stairway/to/heaven"
+        )
         self.job = Job.objects.create(target_db=self.target_db, state=Job.DONE)
-        self.seq = QuerySequence.objects.create(job=self.job, name='ZEP', data='actgatcg')
-        Result.objects.create(
-            job=self.job, seq=self.seq, alphabet=DNA.name, **MATCH1
+        self.seq = QuerySequence.objects.create(
+            job=self.job, name="ZEP", data="actgatcg"
         )
-        Result.objects.create(
-            job=self.job, seq=self.seq, alphabet=DNA.name, **MATCH2
-        )
+        Result.objects.create(job=self.job, seq=self.seq, alphabet=DNA.name, **MATCH1)
+        Result.objects.create(job=self.job, seq=self.seq, alphabet=DNA.name, **MATCH2)
 
     def test_gff(self):
         self.assertEqual(self.job.gff.read(), GFF)
@@ -88,7 +158,8 @@ class InterfaceTests(StaticLiveServerTestCase):
     def setUp(self) -> None:
         super().setUp()
         self.target = TargetDb.objects.create(
-            name="trekkersdb", filepath="/to/boldly/go",
+            name="trekkersdb",
+            filepath="/to/boldly/go",
         )
 
     def test_query(self):

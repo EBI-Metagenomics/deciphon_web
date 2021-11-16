@@ -59,4 +59,40 @@ E.g. on a Mac use Homebrew
 (MacOS will probably complain about launching an unsigned app the first time...
 `open /usr/local/Caskroom/chromedriver` to find the chromedriver executable in Finder and then open it once from there to accept the warning.)
 
+# Use
+## Web interface
+Browse to [the web interface](http://127.0.0.1:8000).
+
+## Rest API
+POST an API request, e.g.
+```shell
+curl --location --request POST '127.0.0.1:8000/rest/jobs' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "job": {
+        "target_db": {"name": "pfam"},
+        "queries": [
+            {
+                "name": "mywonderfulquery",
+                "data": "actgactg"
+            }
+        ]
+    }
+}'
+```
+JSON will be returned, including an `ID` (which is a UUID so that Jobs cannot be enumerated).
+
+Poll the Job detail endpoint to find the current status:
+```shell
+curl --location --request GET '127.0.0.1:8000/rest/jobs/<some-uuid-returned-by-job-submission>'
+```
+
+The response will include `job.state`, which will be `pend` until it is `done` or `fail`.
+It also includes a `result_urls` object.
+
+To find the IDs/names of possible target DBs, list: 
+```shell
+curl --location --request GET '127.0.0.1:8000/rest/dbs'
+```
+
 # Deployment
