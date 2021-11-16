@@ -5,6 +5,7 @@ from Bio.SeqRecord import SeqRecord
 from django.conf import settings
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import TestCase
+from rest_framework.test import APIRequestFactory, APITestCase
 from selenium.webdriver import Keys, ActionChains
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -12,9 +13,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 
-from deciphon.models import DeciphonUser, Job, Target, Alphabet, Result
-from deciphon.test_result_fixtures import AMINO_FAA, CODON_FNA, GFF_OUTPUT
-from deciphon.utils import create_memorable_job_name, alphabet_of_seqrecord
+from deciphon.models import Job, TargetDb, Result, DNA, RNA, QuerySequence
+from deciphon.test_result_fixtures import MATCH1, MATCH2, GFF, FAA, FNA
+from deciphon.utils import alphabet_of_seqrecord
+from deciphon_submission.models import SubmittedJob
 
 
 class DeciphonTestCase(TestCase):
@@ -22,88 +24,114 @@ class DeciphonTestCase(TestCase):
 
 
 @pytest.mark.django_db
-class TestSentinelUser(DeciphonTestCase):
-    def setUp(self) -> None:
-        super().setUp()
-        DeciphonUser.objects.create(username="sentinel", name="Sentinel User")
-        DeciphonUser.objects.create(username="spock", name="Ensign Spock")
-
-    def test_sentinel_user(self):
-        """There exists exactly one sentinel user"""
-        sentinels = DeciphonUser.sentinels
-        self.assertEqual(sentinels.count(), 1)
-        self.assertEqual(sentinels.first().username, "sentinel")
-
-
-@pytest.mark.django_db
-class TestJobNaming(DeciphonTestCase):
-    def setUp(self):
-        super().setUp()
-        self.user = DeciphonUser.objects.create(
-            username="sentinel", name="Sentinel User"
-        )
-        self.target = Target.objects.create(
-            name="trekkersdb", filepath="/to/boldly/go", xxh3=111111
-        )
-        self.alphabet = Alphabet.objects.create(
-            name="dna",
-            size=4,
-            sym_idx64="yyyy",
-            symbols="acgt",
-            creation=1,
-            type="dna",
-            any_symbol="x",
-        )
-
-    def test_job_naming(self):
-        # Can create a manual job name
-        job = Job.objects.create(
-            target=self.target, abc=self.alphabet, user=self.user, sid="enterprise"
-        )
-
-        # Can create auto named job
-        name = create_memorable_job_name()
-        job = Job.objects.create(
-            target=self.target, abc=self.alphabet, user=self.user, sid=name
-        )
-        self.assertIn("-", job.sid)
-
-
-@pytest.mark.django_db
 class TestAlphabetDetection(DeciphonTestCase):
-    def setUp(self) -> None:
-        super().setUp()
-        self.dna = Alphabet.objects.create(
-            name="dna",
-            size=4,
-            sym_idx64="yyyy",
-            symbols="acgt",
-            creation=1,
-            type="dna",
-            any_symbol="x",
-        )
-        self.rna = Alphabet.objects.create(
-            name="rna",
-            size=4,
-            sym_idx64="yyyy",
-            symbols="acgu",
-            creation=1,
-            type="rna",
-            any_symbol="x",
-        )
-
     def test_alphabet_detection(self):
         record = SeqRecord("actgactgactg")
         alphabet = alphabet_of_seqrecord(record)
-        self.assertEqual(alphabet, self.dna)
+        self.assertEqual(alphabet, DNA)
 
         record = SeqRecord("acguacgu")
         alphabet = alphabet_of_seqrecord(record)
-        self.assertEqual(alphabet, self.rna)
+        self.assertEqual(alphabet, RNA)
 
         record = SeqRecord("abcdefg")
         alphabet = alphabet_of_seqrecord(record)
         self.assertIsNone(alphabet)
+
+
+@pytest.mark.django_db
+class TestRestAPI(APITestCase):
+    maxDiff = 5000
+
+    def setUp(self) -> None:
+        self.target_db = TargetDb.objects.create(
+            name="pdb", filepath="/stairway/to/heaven"
+        )
+
+    def test_submit_api_job(self):
+        request = self.client.post("/rest/jobs", {}, format="json")
+        self.assertEqual(request.status_code, 400)
+
+        request = self.client.post(
+            "/rest/jobs",
+            {
+                "job": {
+                    "target_db": {"id": 1},
+                    "queries": [{"name": "apiquery", "data": "actgactg"}],
+                }
+            },
+            format="json",
+        )
+        self.assertEqual(request.status_code, 201)
+        latest_submitted_job = SubmittedJob.objects.order_by("-created").first()
+        jid = str(latest_submitted_job.id)
+
+        expected = {
+            "id": jid,
+            "job": {
+                "error": "",
+                "state": Job.PENDING,
+                "target_db": {"id": 1, "name": "pdb"},
+                "queries": [{"data": "actgactg", "job": 1, "name": "apiquery"}],
+            },
+            "result_urls": {
+                "amino_faa": f"/result/{jid}/download/faa",
+                "codon_fna": f"/result/{jid}/download/fna",
+                "gff": f"/result/{jid}/download/gff",
+            },
+        }
+
+        self.assertEqual(request.json(), expected)
+
+        # Can fetch Job detail
+        request = self.client.get(f"/rest/jobs/{jid}")
+        self.assertEqual(request.status_code, 200)
+        self.assertDictEqual(request.json(), expected)
+
+        # Can submit using target db name instead of ID
+        request = self.client.post(
+            "/rest/jobs",
+            {
+                "job": {
+                    "target_db": {"name": "pdb"},
+                    "queries": [{"name": "apiquery", "data": "actgactg"}],
+                }
+            },
+            format="json",
+        )
+        self.assertEqual(request.status_code, 201)
+
+        # Cannot list all jobs
+        request = self.client.get(f"/rest/jobs")
+        self.assertEqual(request.status_code, 405)
+
+    def test_listing_target_dbs(self):
+        request = self.client.get("/rest/dbs")
+        self.assertEqual(request.status_code, 200)
+        self.assertEqual(request.json(), [{"id": 1, "name": "pdb"}])
+
+
+@pytest.mark.django_db
+class TestResultsFiles(DeciphonTestCase):
+    def setUp(self) -> None:
+        self.target_db = TargetDb.objects.create(
+            name="pdb", filepath="/stairway/to/heaven"
+        )
+        self.job = Job.objects.create(target_db=self.target_db, state=Job.DONE)
+        self.seq = QuerySequence.objects.create(
+            job=self.job, name="ZEP", data="actgatcg"
+        )
+        Result.objects.create(job=self.job, seq=self.seq, alphabet=DNA.name, **MATCH1)
+        Result.objects.create(job=self.job, seq=self.seq, alphabet=DNA.name, **MATCH2)
+
+    def test_gff(self):
+        self.assertEqual(self.job.gff.read(), GFF)
+
+    def test_amino_faa(self):
+        self.assertEqual(self.job.amino_faa.read(), FAA)
+
+    def test_codon_dna(self):
+        self.assertEqual(self.job.codon_fna.read(), FNA)
 
 
 @pytest.mark.django_db
@@ -113,8 +141,12 @@ class InterfaceTests(StaticLiveServerTestCase):
         super().setUpClass()
         options = Options()
         options.headless = True
-        prefs = {'download.default_directory': str(os.path.join(settings.BASE_DIR, 'downloads'))}
-        options.add_experimental_option('prefs', prefs)
+        prefs = {
+            "download.default_directory": str(
+                os.path.join(settings.BASE_DIR, "downloads")
+            )
+        }
+        options.add_experimental_option("prefs", prefs)
         cls.selenium = WebDriver(options=options)
         cls.selenium.implicitly_wait(10)
 
@@ -125,29 +157,9 @@ class InterfaceTests(StaticLiveServerTestCase):
 
     def setUp(self) -> None:
         super().setUp()
-        self.dna = Alphabet.objects.create(
-            name="dna",
-            size=4,
-            sym_idx64="yyyy",
-            symbols="acgt",
-            creation=1,
-            type="dna",
-            any_symbol="x",
-        )
-        self.rna = Alphabet.objects.create(
-            name="rna",
-            size=4,
-            sym_idx64="yyyy",
-            symbols="acgu",
-            creation=1,
-            type="rna",
-            any_symbol="x",
-        )
-        self.user = DeciphonUser.objects.create(
-            username="sentinel", name="Sentinel User"
-        )
-        self.target = Target.objects.create(
-            name="trekkersdb", filepath="/to/boldly/go", xxh3=111111
+        self.target = TargetDb.objects.create(
+            name="trekkersdb",
+            filepath="/to/boldly/go",
         )
 
     def test_query(self):
@@ -178,7 +190,7 @@ class InterfaceTests(StaticLiveServerTestCase):
 
         # Auto detected alphabet
         selected_alphabet = self.selenium.find_element(By.ID, "alphabet-select")
-        self.assertEqual(str(self.dna.id), selected_alphabet.get_attribute("value"))
+        self.assertEqual(str(DNA.name), selected_alphabet.get_attribute("value"))
 
         target_radio = self.selenium.find_element(By.ID, f"target_{self.target.id}")
         self.assertTrue(target_radio.is_selected())
@@ -198,7 +210,7 @@ class InterfaceTests(StaticLiveServerTestCase):
         self.assertNotIn("now", query_input.text)
 
         # alphabet should change
-        self.assertEqual(str(self.rna.id), selected_alphabet.get_attribute("value"))
+        self.assertEqual(str(RNA.name), selected_alphabet.get_attribute("value"))
         self.assertTrue(submit_button.is_enabled())
         ActionChains(self.selenium).move_to_element(submit_button).perform()
         submit_button.click()
@@ -206,16 +218,17 @@ class InterfaceTests(StaticLiveServerTestCase):
         # Should be forwarded to result page
         wait.until(expected_conditions.url_contains("/result/"))
 
-        job = Job.objects.order_by("-id").first()
-        self.assertIsNotNone(job)
+        submitted_job = SubmittedJob.objects.order_by("-created").first()
+        self.assertIsNotNone(submitted_job)
 
-        self.assertIn(job.sid, self.selenium.current_url)
+        self.assertIn(str(submitted_job.id), self.selenium.current_url)
 
         self.assertIn(
             "Job is pending", self.selenium.find_element(By.TAG_NAME, "body").text
         )
 
-        job.status = Job.RUNNING
+        job = submitted_job.job
+        job.state = Job.RUNNING
         job.save()
 
         wait.until(
@@ -225,9 +238,12 @@ class InterfaceTests(StaticLiveServerTestCase):
         )
 
         Result.objects.create(
-            job=job, amino_faa=AMINO_FAA, codon_fna=CODON_FNA, output_gff=GFF_OUTPUT
+            job=job, seq=job.queries.first(), alphabet=DNA.name, **MATCH1
         )
-        job.status = Job.DONE
+        Result.objects.create(
+            job=job, seq=job.queries.first(), alphabet=DNA.name, **MATCH2
+        )
+        job.state = Job.DONE
         job.save()
         wait.until(
             expected_conditions.text_to_be_present_in_element(
@@ -240,5 +256,10 @@ class InterfaceTests(StaticLiveServerTestCase):
             link = self.selenium.find_element(By.LINK_TEXT, link)
             link.click()
 
-        for file_format in ['gff', 'fna', 'faa']:
-            self.assertTrue(os.path.isfile(f'{settings.BASE_DIR}/downloads/{job.sid}-1.{file_format}'))
+        #
+        # for file_format in ["gff", "fna", "faa"]:
+        #     self.assertTrue(
+        #         os.path.isfile(
+        #             f"{settings.BASE_DIR}/downloads/{str(submitted_job.id)}.{file_format}"
+        #         )
+        #     )

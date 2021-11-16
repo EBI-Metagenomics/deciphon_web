@@ -1,0 +1,4 @@
+debug: true
+allowed_hosts: ['localhost', '127.0.0.1']
+# django_db_location:
+# deciphon_db_location:

@@ -15,17 +15,23 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework import routers
 
-from deciphon import views
+from deciphon_submission import views
+
+rest_api_router = routers.DefaultRouter(trailing_slash=False)
+rest_api_router.register(r"jobs", views.RestJobView)
+rest_api_router.register(r"dbs", views.RestTargetDbView)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("unicorn/", include("django_unicorn.urls")),
     path("", views.IndexView.as_view(), name="index"),
-    path("result/<slug:job_sid>", views.ResultView.as_view(), name="result"),
+    path("result/<uuid:pk>", views.ResultView.as_view(), name="result"),
     path(
-        "result/<slug:job_sid>/download/<str:filetype>",
+        "result/<uuid:pk>/download/<str:filetype>",
         views.ResultDownloadView.as_view(),
         name="result",
     ),
+    path("rest/", include(rest_api_router.urls)),
 ]

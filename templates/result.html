@@ -8,12 +8,12 @@
           <a href="/" class="vf-breadcrumbs__link">Home</a>
         </li>
         <li class="vf-breadcrumbs__item" aria-current="location">
-          Job {{ job.sid }}
+          Job {{ submitted_job.id }}
         </li>
       </ul>
     </nav>
 
     <h1>Query results</h1>
-    {% unicorn 'deciphon.components.result.ResultView' job=job %}
+    {% unicorn 'deciphon_submission.components.result.ResultView' submitted_job=submitted_job %}
 
 {% endblock %}

@@ -1,22 +1,23 @@
 from io import StringIO
 from typing import List, Optional
 
-from Bio.SeqRecord import SeqRecord
 from Bio import SeqIO
+from Bio.SeqRecord import SeqRecord
 from django.db import transaction
 from django.db.models import QuerySet
-from django.http import Http404, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django_unicorn.components import UnicornView
 
-from deciphon.models import Alphabet, Query, Job, Target, DeciphonUser
-from deciphon.utils import create_memorable_job_name, alphabet_of_seqrecord
+from deciphon.models import ALPHABETS, Job, TargetDb, DNA
+from deciphon.utils import alphabet_of_seqrecord
+from deciphon_submission.models import SubmittedJob
 
 
 class SubmitJobView(UnicornView):
     template_name = "unicorn/submit-job.html"
 
-    alphabet_options: QuerySet = None
+    alphabet_options: List = None
     target_options: QuerySet = None
 
     alphabet_selected: Optional[str] = None
@@ -26,14 +27,13 @@ class SubmitJobView(UnicornView):
     _seqs: List[SeqRecord] = []
 
     def mount(self):
-        self.alphabet_options = Alphabet.objects.all()
-        self.target_options = Target.objects.all()
+        self.alphabet_options = ALPHABETS
+        self.target_options = TargetDb.objects.all()
         default_target = self.target_options.first()
-        default_alphabet = self.alphabet_options.first()
+        default_alphabet = DNA
         if default_target:
             self.target_selected = str(default_target.id)
-        if default_alphabet:
-            self.alphabet_selected = str(default_alphabet.id)
+        self.alphabet_selected = default_alphabet.name
 
     def can_submit(self):
         return (
@@ -54,31 +54,23 @@ class SubmitJobView(UnicornView):
         except (AssertionError, IndexError):
             self.alphabet_selected = None
         else:
-            self.alphabet_selected = str(alphabet.id)
+            self.alphabet_selected = alphabet.name
 
     def submit(self):
         if not self.can_submit():
             return
 
-        user = DeciphonUser.sentinels.first()
-        if not user:
-            raise Http404()
-
-        job_name = create_memorable_job_name()
-
         with transaction.atomic():
             job = Job.objects.create(
-                target_id=self.target_selected,
-                abc_id=self.alphabet_selected,
-                user=user,
-                sid=job_name,
+                target_db_id=self.target_selected,
             )
+            submitted_job = SubmittedJob.objects.create(job_id=job.id)
             for sequence in self._seqs:
                 best_query_name = (
                     sequence.description
                     if sequence.name == "Generated" and sequence.description is not None
                     else sequence.name
                 )
-                job.queries.create(name=best_query_name, seq=sequence.seq)
+                job.queries.create(name=best_query_name, data=sequence.seq)
 
-        return HttpResponseRedirect(reverse("result", args=(job_name,)))
+        return HttpResponseRedirect(reverse("result", args=(submitted_job.id,)))
