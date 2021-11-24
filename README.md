@@ -74,7 +74,7 @@ curl --location --request POST '127.0.0.1:8000/rest/jobs' \
         "queries": [
             {
                 "name": "mywonderfulquery",
-                "data": "actgactg"
+                "data": "ACGTACGT"
             }
         ]
     }
