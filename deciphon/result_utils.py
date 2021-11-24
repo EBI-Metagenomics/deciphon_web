@@ -88,7 +88,7 @@ def make_fasta(job: "Job", fasta_type: str):
     assert fasta_type in ["amino", "frag", "codon"]
 
     records = []
-
+    hit_id = 0
     for sequence in job.queries.all():
         for result in sequence.results.all():
             start_found = False
@@ -97,8 +97,8 @@ def make_fasta(job: "Job", fasta_type: str):
             data = result.match_data
             elements = []
 
-            for match in data.split(";"):
-                frag, state, codon, amino = match.split(",")
+            for frag_match in data.split(";"):
+                frag, state, codon, amino = frag_match.split(",")
                 if fasta_type == "frag":
                     elements.append(frag)
                 if fasta_type == "amino":
@@ -106,21 +106,22 @@ def make_fasta(job: "Job", fasta_type: str):
                 if fasta_type == "codon":
                     elements.append(codon)
 
-                if end_found:
-                    continue
-
-                if not start_found and state.startswith("M") or state.startswith("I"):
+                if not start_found and (state.startswith("M") or state.startswith("I")):
                     start_found = True
 
                 if start_found and not (state.startswith("M") or state.startswith("I")):
                     end_found = True
 
+                if end_found:
+                    continue
+
             records.append(
                 SeqRecord(
                     Seq("".join(elements)),
-                    id=str(result.match_id),
+                    id=str(hit_id),
                 )
             )
+            hit_id += 1
     fasta_io = io.StringIO()
     SeqIO.write(records, fasta_io, "fasta")
     fasta_io.seek(0)
