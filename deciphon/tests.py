@@ -14,7 +14,7 @@ from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 
 from deciphon.models import Job, TargetDb, Result, DNA, RNA, QuerySequence
-from deciphon.test_result_fixtures import MATCH1, MATCH2, GFF, FAA, FNA
+from deciphon.test_result_fixtures import MATCH, GFF, FAA, FNA, SEQ
 from deciphon.utils import alphabet_of_seqrecord
 from deciphon_submission.models import SubmittedJob
 
@@ -113,16 +113,15 @@ class TestRestAPI(APITestCase):
 
 @pytest.mark.django_db
 class TestResultsFiles(DeciphonTestCase):
+    maxDiff = None
+
     def setUp(self) -> None:
         self.target_db = TargetDb.objects.create(
             name="pdb", filepath="/stairway/to/heaven"
         )
         self.job = Job.objects.create(target_db=self.target_db, state=Job.DONE)
-        self.seq = QuerySequence.objects.create(
-            job=self.job, name="ZEP", data="ACGTACGT"
-        )
-        Result.objects.create(job=self.job, seq=self.seq, alphabet=DNA.name, **MATCH1)
-        Result.objects.create(job=self.job, seq=self.seq, alphabet=DNA.name, **MATCH2)
+        self.seq = QuerySequence.objects.create(job=self.job, name="ZEP", data=SEQ)
+        Result.objects.create(job=self.job, seq=self.seq, alphabet=DNA.name, **MATCH)
 
     def test_gff(self):
         self.assertEqual(self.job.gff.read(), GFF)
@@ -240,10 +239,7 @@ class InterfaceTests(StaticLiveServerTestCase):
         )
 
         Result.objects.create(
-            job=job, seq=job.queries.first(), alphabet=DNA.name, **MATCH1
-        )
-        Result.objects.create(
-            job=job, seq=job.queries.first(), alphabet=DNA.name, **MATCH2
+            job=job, seq=job.queries.first(), alphabet=DNA.name, **MATCH
         )
         job.state = Job.DONE
         job.save()
