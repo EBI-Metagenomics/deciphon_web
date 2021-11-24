@@ -7,6 +7,7 @@ from django.db import transaction
 from django.db.models import QuerySet
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.utils.text import slugify
 from django_unicorn.components import UnicornView
 
 from deciphon.models import ALPHABETS, Job, TargetDb, DNA
@@ -71,6 +72,7 @@ class SubmitJobView(UnicornView):
                     if sequence.name == "Generated" and sequence.description is not None
                     else sequence.name
                 )
+                best_query_name = slugify(best_query_name).upper().replace("-", "_")
                 job.queries.create(name=best_query_name, data=sequence.seq)
 
         return HttpResponseRedirect(reverse("result", args=(submitted_job.id,)))
