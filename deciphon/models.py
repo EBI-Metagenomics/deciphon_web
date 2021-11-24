@@ -29,8 +29,8 @@ class Alphabet:
         ALPHABETS.append(self)
 
 
-DNA = Alphabet(name="dna_iupac", display_name="DNA", symbols="actg")
-RNA = Alphabet(name="rna_iupac", display_name="RNA", symbols="acug")
+DNA = Alphabet(name="dna_iupac", display_name="DNA", symbols="ACGT")
+RNA = Alphabet(name="rna_iupac", display_name="RNA", symbols="ACGU")
 
 
 class TargetDb(DeciphonModel):
@@ -69,7 +69,7 @@ class Job(DeciphonModel):
         (DONE, "Done"),
         (FAILED, "Failed"),
     ]
-    multi_hits = models.BooleanField(default=False)
+    multi_hits = models.BooleanField(default=True)
     hmmer3_compat = models.BooleanField(default=False)
     target_db = models.ForeignKey(
         TargetDb, on_delete=models.DO_NOTHING, related_name="jobs", db_column="db_id"

@@ -26,15 +26,15 @@ class DeciphonTestCase(TestCase):
 @pytest.mark.django_db
 class TestAlphabetDetection(DeciphonTestCase):
     def test_alphabet_detection(self):
-        record = SeqRecord("actgactgactg")
+        record = SeqRecord("ACTGACTGACTG")
         alphabet = alphabet_of_seqrecord(record)
         self.assertEqual(alphabet, DNA)
 
-        record = SeqRecord("acguacgu")
+        record = SeqRecord("ACUGACUG")
         alphabet = alphabet_of_seqrecord(record)
         self.assertEqual(alphabet, RNA)
 
-        record = SeqRecord("abcdefg")
+        record = SeqRecord("ABCDEFG")
         alphabet = alphabet_of_seqrecord(record)
         self.assertIsNone(alphabet)
 
@@ -57,7 +57,7 @@ class TestRestAPI(APITestCase):
             {
                 "job": {
                     "target_db": {"id": 1},
-                    "queries": [{"name": "apiquery", "data": "actgactg"}],
+                    "queries": [{"name": "apiquery", "data": "ACGTACGT"}],
                 }
             },
             format="json",
@@ -72,7 +72,7 @@ class TestRestAPI(APITestCase):
                 "error": "",
                 "state": Job.PENDING,
                 "target_db": {"id": 1, "name": "pdb"},
-                "queries": [{"data": "actgactg", "job": 1, "name": "apiquery"}],
+                "queries": [{"data": "ACGTACGT", "job": 1, "name": "apiquery"}],
             },
             "result_urls": {
                 "amino_faa": f"/result/{jid}/download/faa",
@@ -94,7 +94,7 @@ class TestRestAPI(APITestCase):
             {
                 "job": {
                     "target_db": {"name": "pdb"},
-                    "queries": [{"name": "apiquery", "data": "actgactg"}],
+                    "queries": [{"name": "apiquery", "data": "ACGTACGT"}],
                 }
             },
             format="json",
@@ -119,7 +119,7 @@ class TestResultsFiles(DeciphonTestCase):
         )
         self.job = Job.objects.create(target_db=self.target_db, state=Job.DONE)
         self.seq = QuerySequence.objects.create(
-            job=self.job, name="ZEP", data="actgatcg"
+            job=self.job, name="ZEP", data="ACGTACGT"
         )
         Result.objects.create(job=self.job, seq=self.seq, alphabet=DNA.name, **MATCH1)
         Result.objects.create(job=self.job, seq=self.seq, alphabet=DNA.name, **MATCH2)
@@ -180,12 +180,13 @@ class InterfaceTests(StaticLiveServerTestCase):
 
         # Enter a DNA sequence
         query_input.click()
-        query_input.send_keys("actg actg hello")
+        query_input.send_keys("ACGT ACGT acgt hello")
 
         # Test the sequence cleanup
         self.selenium.find_element(By.ID, "check-query").click()
         self.assertIn("Generated Header", query_input.text)
-        self.assertIn("actgactg", query_input.text)
+        self.assertIn("ACGTACGT", query_input.text)
+        self.assertNotIn("acgt", query_input.text)
         self.assertNotIn("hello", query_input.text)
 
         # Auto detected alphabet
@@ -203,11 +204,12 @@ class InterfaceTests(StaticLiveServerTestCase):
         query_input.clear()
         query_input.send_keys("> RNAQUERY")
         query_input.send_keys(Keys.RETURN)
-        query_input.send_keys("acgu acgu rna now")
+        query_input.send_keys("ACGU ACGU RNA NOW acg")
         self.selenium.find_element(By.ID, "check-query").click()
         self.assertIn("> RNAQUERY", query_input.text)
-        self.assertIn("acguacgu", query_input.text)
-        self.assertNotIn("now", query_input.text)
+        self.assertIn("ACGUACGU", query_input.text)
+        self.assertNotIn("NOW", query_input.text)
+        self.assertNotIn("acg", query_input.text)
 
         # alphabet should change
         self.assertEqual(str(RNA.name), selected_alphabet.get_attribute("value"))
