@@ -1,3 +1,4 @@
+{% load timestamp %}
 <div class="container" unicorn:poll-2000="check_state">
     {% if submitted_job.job.state == 'pend' %}
         <h3>Job is pending</h3>
@@ -25,7 +26,7 @@
     {% if submitted_job.job.state == 'done' %}
         <div class="vf-stack vf-stack--800">
             <h3>Job complete</h3>
-            <div><span class="vf-form__helper">Finished at: {{ submitted_job.job.exec_ended | date:"U" }}</span></div>
+            <div><span class="vf-form__helper">Finished at: {{ submitted_job.job.exec_ended | to_datetime:"%c" }}</span></div>
 
             <section class="vf-card-container vf-card-container__col-3 | vf-u-background-color--grey--lightest vf-u-fullbleed" style="--vf-card__image--aspect-ratio: 16 / 9;">
                 <div class="vf-card-container__inner">
