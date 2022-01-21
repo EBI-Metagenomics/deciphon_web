@@ -17,7 +17,7 @@ Deciphon Web interacts with Deciphon via [Deciphon's REST client](https://github
 - Check out the repository.
 - Install `npm` if you haven't got it. e.g. `brew install node`
 - You will need either Deciphon running, to use its REST API, or mock the API using e.g. [Postman](https://www.postman.com).
-- Check the config in `./config/config.json` to set the API URL.
+- Check the config in `src/config/config.json` to set the API URL.
 - `npm install` to install the dependencies.
 
 ## Style
