@@ -6,21 +6,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
-      with:
-        python-version: '3.9'
-    - uses: nanasess/setup-chromedriver@master
-    - name: install dependencies
-      run: pip install -r requirements.txt
-    - name: testing
-      run: pytest
-    - name: upload coverage
-      uses: actions/upload-artifact@v2
-      with:
-        name: pytest-coverage
-        path: test-results
-    - name: upload coverage to Codecov
-      uses: codecov/codecov-action@v2
-      with:
-        files: ./test-results/coverage.xml
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - run: npm install
+      - run: npm test -- --coverage
+      - name: upload coverage to Codecov
+        uses: codecov/codecov-action@v2
