@@ -1,3 +1,4 @@
 {
-  "API_BASE": "https://fd8bc8ec-9ff1-4d42-9554-30d2b8470b5e.mock.pstmn.io"
+  "API_BASE": "https://fd8bc8ec-9ff1-4d42-9554-30d2b8470b5e.mock.pstmn.io",
+  "POLLING_INTERVAL_MS": 1000
 }

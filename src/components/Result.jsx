@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import api, { baseUrl } from "../api";
+import api, { baseUrl, pollingInterval } from "../api";
 import Loading from "./Loading";
 import { toast } from "react-toastify";
 import { useInterval } from "react-use";
@@ -108,6 +108,7 @@ const Result = () => {
   const [jobState, setJobState] = useState();
   const [errors, setErrors] = useState();
   const [isPolling, setIsPolling] = useState(false);
+  const [jobsAhead, setJobsAhead] = useState(null);
 
   useInterval(
     () => {
@@ -124,11 +125,21 @@ const Result = () => {
             response?.data?.state === "fail"
           ) {
             setIsPolling(false);
+          } else {
+            api
+              .get("/jobs/next_pend")
+              .then((response) => {
+                setJobsAhead(parseInt(jobid) - response.data.id);
+              })
+              .catch((err) => {
+                console.error(err);
+                setJobsAhead(null);
+              });
           }
         })
         .catch((err) => setErrors([err?.response?.status]));
     },
-    isPolling ? 1000 : null
+    isPolling ? pollingInterval : null
   );
 
   useEffect(() => {
@@ -161,6 +172,9 @@ const Result = () => {
           <h3>Job is pending</h3>
           <span className="vf-badge vf-badge--primary">live updating</span>
           <UrlCopier />
+          {jobsAhead !== null && jobsAhead > 0 && (
+            <p>There are {jobsAhead} jobs ahead of yours in the queue.</p>
+          )}
         </>
       )}
       {jobState?.state === "run" && (
