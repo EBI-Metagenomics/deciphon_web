@@ -790,7 +790,7 @@
 									"_postman_previewlanguage": "json",
 									"header": null,
 									"cookie": [],
-									"body": "{\n    \"id\": 100,\n    \"db_id\": 0,\n    \"multi_hits\": false,\n    \"hmmer3_compat\": false,\n    \"state\": \"pend\",\n    \"error\": \"\",\n    \"submission\": 0,\n    \"exec_started\": 0,\n    \"exec_ended\": 0\n}"
+									"body": "{\n    \"id\": 100,\n    \"db_id\": 0,\n    \"multi_hits\": false,\n    \"hmmer3_compat\": false,\n    \"state\": \"done\",\n    \"error\": \"\",\n    \"submission\": 0,\n    \"exec_started\": 0,\n    \"exec_ended\": 0\n}"
 								},
 								{
 									"name": "RUNNING 101",
@@ -989,6 +989,37 @@
 							],
 							"cookie": [],
 							"body": "{\n \"rc\": \"efail\",\n \"msg\": \"\"\n}"
+						}
+					]
+				},
+				{
+					"name": "get next pending job",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": [
+						{
+							"name": "NEXT IS 90",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/jobs/next_pend",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"jobs",
+										"next_pend"
+									]
+								}
+							},
+							"_postman_previewlanguage": "json",
+							"header": null,
+							"cookie": [],
+							"body": "{\n    \"id\": 90,\n    \"db_id\": 0,\n    \"multi_hits\": false,\n    \"hmmer3_compat\": false,\n    \"state\": \"pend\",\n    \"error\": \"\",\n    \"submission\": 0,\n    \"exec_started\": 0,\n    \"exec_ended\": 0\n}"
 						}
 					]
 				}
