@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import api, { baseUrl } from "../api";
 import Loading from "./Loading";
 import { toast } from "react-toastify";
+import { useBoolean, useInterval } from "react-use";
 
 const UrlCopier = () => {
   const sayCopied = () =>
@@ -106,18 +107,33 @@ const Result = () => {
   let { jobid } = useParams();
   const [jobState, setJobState] = useState();
   const [errors, setErrors] = useState();
+  const [isPolling, toggleIsPolling] = useBoolean(false);
+
+  useInterval(
+    () => {
+      if (!jobid) return;
+      api
+        .get(`/jobs/${jobid}`)
+        .then((response) => {
+          setJobState(response.data);
+          if (response.data?.error?.length) {
+            setErrors([response.data.error]);
+          }
+          if (
+            response?.data?.state === "done" ||
+            response?.data?.state === "fail"
+          ) {
+            toggleIsPolling(false);
+          }
+        })
+        .catch((err) => setErrors([err?.response?.status]));
+    },
+    isPolling ? 1000 : null
+  );
 
   useEffect(() => {
     if (!jobid) return;
-    api
-      .get(`/jobs/${jobid}`)
-      .then((response) => {
-        setJobState(response.data);
-        // if (response.data?.error?.length) {
-        //   setErrors([response.data.error]);
-        // }
-      })
-      .catch((err) => setErrors([err?.response?.status]));
+    toggleIsPolling(true);
   }, [jobid]);
 
   const finishedAt = jobState
