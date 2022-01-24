@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import api, { baseUrl } from "../api";
 import Loading from "./Loading";
 import { toast } from "react-toastify";
-import { useBoolean, useInterval } from "react-use";
+import { useInterval } from "react-use";
 
 const UrlCopier = () => {
   const sayCopied = () =>
@@ -107,7 +107,7 @@ const Result = () => {
   let { jobid } = useParams();
   const [jobState, setJobState] = useState();
   const [errors, setErrors] = useState();
-  const [isPolling, toggleIsPolling] = useBoolean(false);
+  const [isPolling, setIsPolling] = useState(false);
 
   useInterval(
     () => {
@@ -123,7 +123,7 @@ const Result = () => {
             response?.data?.state === "done" ||
             response?.data?.state === "fail"
           ) {
-            toggleIsPolling(false);
+            setIsPolling(false);
           }
         })
         .catch((err) => setErrors([err?.response?.status]));
@@ -133,7 +133,7 @@ const Result = () => {
 
   useEffect(() => {
     if (!jobid) return;
-    toggleIsPolling(true);
+    setIsPolling(true);
   }, [jobid]);
 
   const finishedAt = jobState

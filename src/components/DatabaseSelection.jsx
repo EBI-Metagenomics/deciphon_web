@@ -17,7 +17,7 @@ const DatabaseSelection = ({ selectedDb, onSelectDb }) => {
       .catch((error) => {
         console.error(error);
       });
-  }, []);
+  }, [selectedDb, onSelectDb]);
 
   return (
     <fieldset className="vf-form__fieldset | vf-stack vf-stack--400">
