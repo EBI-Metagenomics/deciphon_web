@@ -17,7 +17,10 @@ Deciphon Web interacts with Deciphon via [Deciphon's REST client](https://github
 - Check out the repository.
 - Install `npm` if you haven't got it. e.g. `brew install node`
 - You will need either Deciphon running, to use its REST API, or mock the API using e.g. [Postman](https://www.postman.com).
-- Check the config in `src/config/config.json` to set the API URL.
+  - If you're using Postman, there is a collection in this repo `mock_api.postman_collection.json`, that you can import and set up a Mock Server with.
+    - This will give you a Mock Server URL, running on Postman's servers, to use for testing.
+    - Job ID 99 is a completed job with results. 100 is a pending job, 101 is a running job, and 103 is a failed job.
+  - Check the config in `src/config/config.json` to set the API URL (either your local Deciphon or the Postman server).
 - `npm install` to install the dependencies.
 
 ## Style

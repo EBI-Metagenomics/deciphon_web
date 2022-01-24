@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import api from "../api";
+import api, { baseUrl } from "../api";
 import Loading from "./Loading";
 import { toast } from "react-toastify";
 
@@ -31,6 +31,76 @@ const UrlCopier = () => {
     </div>
   );
 };
+const toastOptions = {
+  position: "bottom-left",
+  autoClose: 5000,
+  hideProgressBar: false,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+  progress: undefined,
+};
+
+const ResultCopier = ({ resultSuffix, title }) => {
+  let { jobid } = useParams();
+
+  return (
+    <div>
+      <button
+        className={"vf-button vf-button--secondary vf-button--sm"}
+        onClick={async () => {
+          toast.promise(
+            () =>
+              api
+                .get(`/jobs/${jobid}/prods/${resultSuffix}`)
+                .then((response) => {
+                  navigator.clipboard.writeText(response.data);
+                }),
+            {
+              pending: "⏳ Fetching result...",
+              success: `👍 Copied ${title} to clipboard!`,
+              error: "🚨 Sorry something went wrong.",
+            },
+            toastOptions
+          );
+        }}
+      >
+        <i className="icon icon-common icon-copy" />
+        &nbsp;Copy result
+      </button>
+      <button
+        className={"vf-button vf-button--secondary vf-button--sm"}
+        onClick={() => {
+          window.open(
+            `${baseUrl}/jobs/${jobid}/prods/${resultSuffix}`,
+            "_blank"
+          );
+        }}
+      >
+        <i className="icon icon-common icon-download" />
+        &nbsp;Download
+      </button>
+    </div>
+  );
+};
+
+const ResultCard = ({ resultSuffix, title, description, fileFormat }) => {
+  return (
+    <article
+      key={resultSuffix}
+      className="vf-card vf-card--brand vf-card--bordered"
+    >
+      <div className="vf-card__content | vf-stack vf-stack--400">
+        <h3 className="vf-card__heading">
+          <i className={`icon icon-fileformats icon-${fileFormat}`} />
+          &nbsp; Download {title}
+        </h3>
+        <p className="vf-card__text">{description}</p>
+        <ResultCopier title={title} resultSuffix={resultSuffix} />
+      </div>
+    </article>
+  );
+};
 
 const Result = () => {
   let { jobid } = useParams();
@@ -43,9 +113,17 @@ const Result = () => {
       .get(`/jobs/${jobid}`)
       .then((response) => {
         setJobState(response.data);
+        // if (response.data?.error?.length) {
+        //   setErrors([response.data.error]);
+        // }
       })
-      .catch((err) => setErrors([err.response.status]));
+      .catch((err) => setErrors([err?.response?.status]));
   }, [jobid]);
+
+  const finishedAt = jobState
+    ? new Date(jobState?.exec_ended).toLocaleDateString()
+    : null;
+
   return (
     <div className={"vf-stack vf-stack--400"}>
       <nav className="vf-breadcrumbs" aria-label="Breadcrumb">
@@ -76,6 +154,12 @@ const Result = () => {
           <UrlCopier />
         </>
       )}
+      {jobState?.state === "fail" && (
+        <>
+          <h3>Job has failed</h3>
+          <UrlCopier />
+        </>
+      )}
       <Loading
         isLoading={jobState?.state === "run" || jobState?.state === "pend"}
       />
@@ -93,6 +177,63 @@ const Result = () => {
               </div>
             </article>
           ))}
+        </div>
+      )}
+      {jobState?.state === "done" && (
+        <div className="vf-stack vf-stack--800">
+          <h3>Job complete</h3>
+          <div>
+            <span className="vf-form__helper">Finished at: {finishedAt}</span>
+          </div>
+          <section className="vf-card-container vf-card-container__col-3 | vf-u-background-color--grey--lightest vf-u-fullbleed">
+            <div className="vf-card-container__inner">
+              <div className="vf-section-header">
+                <h2 className="vf-section-header__heading">Downloads</h2>
+                <p className="vf-section-header__text">
+                  Results files from your queries
+                </p>
+              </div>
+
+              <ResultCard
+                title={"GFF"}
+                description={
+                  "GFF (General Feature Format) v3 file listing all found features."
+                }
+                resultSuffix={"gff"}
+                fileFormat={"GFF"}
+              />
+
+              <ResultCard
+                title={"Frags"}
+                description={"FA (FASTA) file of matched fragment sequences."}
+                resultSuffix={"fasta/frag"}
+                fileFormat={"FASTA"}
+              />
+
+              <ResultCard
+                title={"FNA"}
+                description={
+                  "FNA (FASTA Amino Acids) file of matched amino acid sequences."
+                }
+                resultSuffix={"fasta/amino"}
+                fileFormat={"FASTA"}
+              />
+
+              <ResultCard
+                title={"Codons"}
+                description={"FA (FASTA) file of codons."}
+                resultSuffix={"fasta/codon"}
+                fileFormat={"FASTA"}
+              />
+
+              <ResultCard
+                title={"State"}
+                description={"FA (FASTA) file, showing states of matches."}
+                resultSuffix={"fasta/state"}
+                fileFormat={"FASTA"}
+              />
+            </div>
+          </section>
         </div>
       )}
     </div>
