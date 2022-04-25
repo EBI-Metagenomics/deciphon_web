@@ -18,7 +18,7 @@ const submitJob = (dbId, queryText, handleJobSubmitted) => {
     })),
   };
 
-  axios.post(`${config.API_BASE}/jobs`, data).then((res) => {
+  axios.post(`${config.API_BASE}/scans/`, data).then((res) => {
     const jobId = res.data.id;
     handleJobSubmitted(jobId);
   });
