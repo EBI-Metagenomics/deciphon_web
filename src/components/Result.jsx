@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import api, { baseUrl, pollingInterval } from "../api";
 import Loading from "./Loading";
 import { toast } from "react-toastify";
@@ -42,9 +42,7 @@ const toastOptions = {
   progress: undefined,
 };
 
-const ResultCopier = ({ resultSuffix, title }) => {
-  let { jobid } = useParams();
-
+const ResultCopier = ({ resultSuffix, title, scanId }) => {
   return (
     <div>
       <button
@@ -53,7 +51,7 @@ const ResultCopier = ({ resultSuffix, title }) => {
           toast.promise(
             () =>
               api
-                .get(`/jobs/${jobid}/prods/${resultSuffix}`)
+                .get(`/scans/${scanId}/prods/${resultSuffix}`)
                 .then((response) => {
                   navigator.clipboard.writeText(response.data);
                 }),
@@ -73,7 +71,7 @@ const ResultCopier = ({ resultSuffix, title }) => {
         className={"vf-button vf-button--secondary vf-button--sm"}
         onClick={() => {
           window.open(
-            `${baseUrl}/jobs/${jobid}/prods/${resultSuffix}`,
+            `${baseUrl}/scans/${scanId}/prods/${resultSuffix}`,
             "_blank"
           );
         }}
@@ -85,7 +83,13 @@ const ResultCopier = ({ resultSuffix, title }) => {
   );
 };
 
-const ResultCard = ({ resultSuffix, title, description, fileFormat }) => {
+const ResultCard = ({
+  resultSuffix,
+  title,
+  description,
+  fileFormat,
+  scanId,
+}) => {
   return (
     <article
       key={resultSuffix}
@@ -97,7 +101,11 @@ const ResultCard = ({ resultSuffix, title, description, fileFormat }) => {
           &nbsp; Download {title}
         </h3>
         <p className="vf-card__text">{description}</p>
-        <ResultCopier title={title} resultSuffix={resultSuffix} />
+        <ResultCopier
+          title={title}
+          resultSuffix={resultSuffix}
+          scanId={scanId}
+        />
       </div>
     </article>
   );
@@ -109,6 +117,13 @@ const Result = () => {
   const [errors, setErrors] = useState();
   const [isPolling, setIsPolling] = useState(false);
   const [jobsAhead, setJobsAhead] = useState(null);
+  const [scanId, setScanId] = useState(null);
+
+  useEffect(() => {
+    api.get(`/jobs/${jobid}/scan`).then((response) => {
+      setScanId(response?.data?.id);
+    });
+  }, [jobid]);
 
   useInterval(
     () => {
@@ -231,6 +246,7 @@ const Result = () => {
                 }
                 resultSuffix={"gff"}
                 fileFormat={"GFF"}
+                scanId={scanId}
               />
 
               <ResultCard
@@ -238,6 +254,7 @@ const Result = () => {
                 description={"FA (FASTA) file of matched fragment sequences."}
                 resultSuffix={"fasta/frag"}
                 fileFormat={"FASTA"}
+                scanId={scanId}
               />
 
               <ResultCard
@@ -247,6 +264,7 @@ const Result = () => {
                 }
                 resultSuffix={"fasta/amino"}
                 fileFormat={"FASTA"}
+                scanId={scanId}
               />
 
               <ResultCard
@@ -254,6 +272,7 @@ const Result = () => {
                 description={"FA (FASTA) file of codons."}
                 resultSuffix={"fasta/codon"}
                 fileFormat={"FASTA"}
+                scanId={scanId}
               />
 
               <ResultCard
@@ -261,6 +280,7 @@ const Result = () => {
                 description={"FA (FASTA) file, showing states of matches."}
                 resultSuffix={"fasta/state"}
                 fileFormat={"FASTA"}
+                scanId={scanId}
               />
             </div>
           </section>

@@ -20,12 +20,12 @@
 										"method": "GET",
 										"header": [],
 										"url": {
-											"raw": "{{baseUrl}}/jobs/:job_id/prods/gff",
+											"raw": "{{baseUrl}}/scans/:job_id/prods/gff",
 											"host": [
 												"{{baseUrl}}"
 											],
 											"path": [
-												"jobs",
+												"scans",
 												":job_id",
 												"prods",
 												"gff"
@@ -46,12 +46,12 @@
 												"method": "GET",
 												"header": [],
 												"url": {
-													"raw": "{{baseUrl}}/jobs/:job_id/prods/gff",
+													"raw": "{{baseUrl}}/scans/:job_id/prods/gff",
 													"host": [
 														"{{baseUrl}}"
 													],
 													"path": [
-														"jobs",
+														"scans",
 														":job_id",
 														"prods",
 														"gff"
@@ -83,12 +83,12 @@
 												"method": "GET",
 												"header": [],
 												"url": {
-													"raw": "{{baseUrl}}/jobs/:job_id/prods/gff",
+													"raw": "{{baseUrl}}/scans/:job_id/prods/gff",
 													"host": [
 														"{{baseUrl}}"
 													],
 													"path": [
-														"jobs",
+														"scans",
 														":job_id",
 														"prods",
 														"gff"
@@ -120,12 +120,12 @@
 												"method": "GET",
 												"header": [],
 												"url": {
-													"raw": "{{baseUrl}}/jobs/:job_id/prods/gff",
+													"raw": "{{baseUrl}}/scans/:job_id/prods/gff",
 													"host": [
 														"{{baseUrl}}"
 													],
 													"path": [
-														"jobs",
+														"scans",
 														":job_id",
 														"prods",
 														"gff"
@@ -157,12 +157,12 @@
 												"method": "GET",
 												"header": [],
 												"url": {
-													"raw": "{{baseUrl}}/jobs/:job_id/prods/gff",
+													"raw": "{{baseUrl}}/scans/:job_id/prods/gff",
 													"host": [
 														"{{baseUrl}}"
 													],
 													"path": [
-														"jobs",
+														"scans",
 														":job_id",
 														"prods",
 														"gff"
@@ -194,12 +194,12 @@
 												"method": "GET",
 												"header": [],
 												"url": {
-													"raw": "{{baseUrl}}/jobs/:job_id/prods/gff",
+													"raw": "{{baseUrl}}/scans/:job_id/prods/gff",
 													"host": [
 														"{{baseUrl}}"
 													],
 													"path": [
-														"jobs",
+														"scans",
 														":job_id",
 														"prods",
 														"gff"
@@ -226,12 +226,12 @@
 										"method": "GET",
 										"header": [],
 										"url": {
-											"raw": "{{baseUrl}}/jobs/:job_id/prods/fasta/:fasta_type",
+											"raw": "{{baseUrl}}/scans/:job_id/prods/fasta/:fasta_type",
 											"host": [
 												"{{baseUrl}}"
 											],
 											"path": [
-												"jobs",
+												"scans",
 												":job_id",
 												"prods",
 												"fasta",
@@ -258,12 +258,12 @@
 												"method": "GET",
 												"header": [],
 												"url": {
-													"raw": "{{baseUrl}}/jobs/:job_id/prods/fasta/:fasta_type",
+													"raw": "{{baseUrl}}/scans/:job_id/prods/fasta/:fasta_type",
 													"host": [
 														"{{baseUrl}}"
 													],
 													"path": [
-														"jobs",
+														"scans",
 														":job_id",
 														"prods",
 														"fasta",
@@ -301,12 +301,12 @@
 												"method": "GET",
 												"header": [],
 												"url": {
-													"raw": "{{baseUrl}}/jobs/:job_id/prods/fasta/:fasta_type",
+													"raw": "{{baseUrl}}/scans/:job_id/prods/fasta/:fasta_type",
 													"host": [
 														"{{baseUrl}}"
 													],
 													"path": [
-														"jobs",
+														"scans",
 														":job_id",
 														"prods",
 														"fasta",
@@ -344,12 +344,12 @@
 												"method": "GET",
 												"header": [],
 												"url": {
-													"raw": "{{baseUrl}}/jobs/:job_id/prods/fasta/:fasta_type",
+													"raw": "{{baseUrl}}/scans/:job_id/prods/fasta/:fasta_type",
 													"host": [
 														"{{baseUrl}}"
 													],
 													"path": [
-														"jobs",
+														"scans",
 														":job_id",
 														"prods",
 														"fasta",
@@ -387,12 +387,12 @@
 												"method": "GET",
 												"header": [],
 												"url": {
-													"raw": "{{baseUrl}}/jobs/:job_id/prods/fasta/:fasta_type",
+													"raw": "{{baseUrl}}/scans/:job_id/prods/fasta/:fasta_type",
 													"host": [
 														"{{baseUrl}}"
 													],
 													"path": [
-														"jobs",
+														"scans",
 														":job_id",
 														"prods",
 														"fasta",
@@ -430,12 +430,12 @@
 												"method": "GET",
 												"header": [],
 												"url": {
-													"raw": "{{baseUrl}}/jobs/:job_id/prods/fasta/:fasta_type",
+													"raw": "{{baseUrl}}/scans/:job_id/prods/fasta/:fasta_type",
 													"host": [
 														"{{baseUrl}}"
 													],
 													"path": [
-														"jobs",
+														"scans",
 														":job_id",
 														"prods",
 														"fasta",
@@ -466,12 +466,12 @@
 												"method": "GET",
 												"header": [],
 												"url": {
-													"raw": "{{baseUrl}}/jobs/:job_id/prods/fasta/:fasta_type",
+													"raw": "{{baseUrl}}/scans/:job_id/prods/fasta/:fasta_type",
 													"host": [
 														"{{baseUrl}}"
 													],
 													"path": [
-														"jobs",
+														"scans",
 														":job_id",
 														"prods",
 														"fasta",
@@ -502,12 +502,12 @@
 												"method": "GET",
 												"header": [],
 												"url": {
-													"raw": "{{baseUrl}}/jobs/:job_id/prods/fasta/:fasta_type",
+													"raw": "{{baseUrl}}/scans/:job_id/prods/fasta/:fasta_type",
 													"host": [
 														"{{baseUrl}}"
 													],
 													"path": [
-														"jobs",
+														"scans",
 														":job_id",
 														"prods",
 														"fasta",
@@ -538,12 +538,12 @@
 												"method": "GET",
 												"header": [],
 												"url": {
-													"raw": "{{baseUrl}}/jobs/:job_id/prods/fasta/:fasta_type",
+													"raw": "{{baseUrl}}/scans/:job_id/prods/fasta/:fasta_type",
 													"host": [
 														"{{baseUrl}}"
 													],
 													"path": [
-														"jobs",
+														"scans",
 														":job_id",
 														"prods",
 														"fasta",
