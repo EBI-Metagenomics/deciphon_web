@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import api, { baseUrl, pollingInterval } from "../api";
 import Loading from "./Loading";
 import { toast } from "react-toastify";
