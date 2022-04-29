@@ -163,7 +163,7 @@ const Result = () => {
   }, [jobid]);
 
   const finishedAt = jobState
-    ? new Date(jobState?.exec_ended).toLocaleDateString()
+    ? new Date(1000 * parseInt(jobState?.exec_ended || "0")).toLocaleString()
     : null;
 
   return (
@@ -250,19 +250,19 @@ const Result = () => {
               />
 
               <ResultCard
-                title={"Frags"}
+                title={"Fragments"}
                 description={"FA (FASTA) file of matched fragment sequences."}
-                resultSuffix={"fasta/frag"}
+                resultSuffix={"fragment"}
                 fileFormat={"FASTA"}
                 scanId={scanId}
               />
 
               <ResultCard
-                title={"FNA"}
+                title={"Amino acids"}
                 description={
-                  "FNA (FASTA Amino Acids) file of matched amino acid sequences."
+                  "FAA (FASTA Amino Acids) file of matched amino acid sequences."
                 }
-                resultSuffix={"fasta/amino"}
+                resultSuffix={"amino"}
                 fileFormat={"FASTA"}
                 scanId={scanId}
               />
@@ -270,15 +270,17 @@ const Result = () => {
               <ResultCard
                 title={"Codons"}
                 description={"FA (FASTA) file of codons."}
-                resultSuffix={"fasta/codon"}
+                resultSuffix={"codon"}
                 fileFormat={"FASTA"}
                 scanId={scanId}
               />
 
               <ResultCard
-                title={"State"}
-                description={"FA (FASTA) file, showing states of matches."}
-                resultSuffix={"fasta/state"}
+                title={"HMM Path"}
+                description={
+                  "FA (FASTA) file, showing match/insertion/deletion states of matches."
+                }
+                resultSuffix={"path"}
                 fileFormat={"FASTA"}
                 scanId={scanId}
               />
