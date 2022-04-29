@@ -31,11 +31,14 @@ const QuerySequence = ({ onStageSequence }) => {
       "error-change",
       handleErrorChange
     );
-    return () =>
-      textAreaSequenceRef.current.removeEventListener(
-        "error-change",
-        handleErrorChange
-      );
+    return () => {
+      if (textAreaSequenceRef?.current) {
+        textAreaSequenceRef.current.removeEventListener(
+          "error-change",
+          handleErrorChange
+        );
+      }
+    };
   }, [textAreaSequenceRef]);
   return (
     <div className="vf-stack vf-stack--400">
