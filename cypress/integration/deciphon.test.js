@@ -41,6 +41,16 @@ describe("Deciphon website tests", () => {
     cy.intercept("POST", "**/scans", {
       fixture: "scan_new.json",
     });
+
+    cy.wrap(
+      Cypress.automation("remote:debugger:protocol", {
+        command: "Browser.grantPermissions",
+        params: {
+          permissions: ["clipboardReadWrite", "clipboardSanitizedWrite"],
+          origin: "http://localhost:3000",
+        },
+      })
+    );
   });
 
   it("loads successfully", () => {
