@@ -11,6 +11,10 @@ jobs:
         with:
           node-version: '14'
       - run: npm install
-      - run: npm test -- --coverage
+      - run: npm run start
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
+        with:
+          browser: chrome
       - name: upload coverage to Codecov
         uses: codecov/codecov-action@v2

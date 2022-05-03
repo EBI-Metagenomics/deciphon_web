@@ -1,0 +1,11 @@
+{
+  "id": 100,
+  "db_id": 0,
+  "multi_hits": false,
+  "hmmer3_compat": false,
+  "state": "done",
+  "error": "",
+  "submission": 0,
+  "exec_started": 0,
+  "exec_ended": 0
+}

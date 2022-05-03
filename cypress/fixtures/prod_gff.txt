@@ -1,0 +1,7 @@
+##gff-version 3
+##sequence-region Homoserine_dh-consensus 1 519
+Homoserine_dh-consensus	deciphon:0.1.0	CDS	1	519	285.981201171875	.	0	Epsilon=0.01;ID=1;Profile_acc=PF00742.20;Target_alph=dna
+##sequence-region AA_kinase-consensus 1 723
+AA_kinase-consensus	deciphon:0.1.0	CDS	1	723	343.647705078125	.	0	Epsilon=0.01;ID=2;Profile_acc=PF00696.29;Target_alph=dna
+##sequence-region 23ISL-consensus 1 486
+23ISL-consensus	deciphon:0.1.0	CDS	1	486	354.7095947265625	.	0	Epsilon=0.01;ID=3;Profile_acc=PF16620.6;Target_alph=dna

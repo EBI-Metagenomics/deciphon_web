@@ -1,0 +1,10 @@
+{
+  "id": 103,
+  "type": 0,
+  "state": "fail",
+  "progress": 0,
+  "error": "Something awful happened",
+  "submission": 0,
+  "exec_started": 0,
+  "exec_ended": 0
+}

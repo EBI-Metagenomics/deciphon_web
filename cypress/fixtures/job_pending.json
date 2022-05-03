@@ -1,0 +1,10 @@
+{
+  "id": 100,
+  "type": 0,
+  "state": "pend",
+  "progress": 0,
+  "error": "",
+  "submission": 0,
+  "exec_started": 0,
+  "exec_ended": 0
+}

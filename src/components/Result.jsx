@@ -118,6 +118,7 @@ const Result = () => {
   const [isPolling, setIsPolling] = useState(false);
   const [jobsAhead, setJobsAhead] = useState(null);
   const [scanId, setScanId] = useState(null);
+  const [numResults, setNumResults] = useState(null);
 
   useEffect(() => {
     api.get(`/jobs/${jobid}/scan`).then((response) => {
@@ -162,6 +163,14 @@ const Result = () => {
     setIsPolling(true);
   }, [jobid]);
 
+  useEffect(() => {
+    if (jobState?.state === "done") {
+      api.get(`/scans/${scanId}/prods`).then((response) => {
+        setNumResults(response?.data?.length);
+      });
+    }
+  }, [jobState]);
+
   const finishedAt = jobState
     ? new Date(1000 * parseInt(jobState?.exec_ended || "0")).toLocaleString()
     : null;
@@ -196,6 +205,23 @@ const Result = () => {
         <>
           <h3>Job is running</h3>
           <span className="vf-badge vf-badge--primary">live updating</span>
+          <div
+            role="progressbar"
+            aria-valuenow={jobState.progress}
+            aria-valuemin="0"
+            aria-valuemax="100"
+            className="vf-progress-indicator"
+          >
+            <div
+              className="vf-progress-indicator__mark"
+              style={{
+                "--vf-progress-indicator__percent": `${jobState.progress}%`,
+              }}
+            />
+            <p className="vf-progress-indicator__helper-text">
+              Progress reported by Deciphon Job Server
+            </p>
+          </div>
           <UrlCopier />
         </>
       )}
@@ -227,6 +253,18 @@ const Result = () => {
       {jobState?.state === "done" && (
         <div className="vf-stack vf-stack--800">
           <h3>Job complete</h3>
+          {numResults !== null && (
+            <div className="vf-flag vf-flag--bottom vf-flag--200">
+              <div className="vf-flag__media">
+                <p className="vf-lede">{numResults}</p>
+              </div>
+              <div className="vf-flag__body">
+                <p className="vf-u-type__text-body--3 vf-u-margin--0">
+                  matches found
+                </p>
+              </div>
+            </div>
+          )}
           <div>
             <span className="vf-form__helper">Finished at: {finishedAt}</span>
           </div>
