@@ -11,10 +11,21 @@ jobs:
         with:
           node-version: '14'
       - run: npm install
-      - run: npm run start & npx wait-on http://localhost:3000
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
           browser: chrome
+          start: npm start
+          wait-on: 'http://localhost:3000'
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+      - uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: cypress-videos
+          path: cypress/videos
       - name: upload coverage to Codecov
         uses: codecov/codecov-action@v2
