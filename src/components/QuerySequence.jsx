@@ -2,6 +2,7 @@ import TextareaSequence from "textarea-sequence/dist/textarea-sequence";
 import loadWebComponent from "../utils/loadWebComponent";
 import { useEffect, useRef, useState } from "react";
 import exampleQuery from "../utils/exampleQuery";
+import { useBoolean } from "react-use";
 
 const errorBadgeStyle = {
   borderColor: "var(--vf-ui-color--red)",
@@ -21,25 +22,22 @@ const QuerySequence = ({ onStageSequence }) => {
   loadWebComponent("textarea-sequence", TextareaSequence);
   const textAreaSequenceRef = useRef();
   const [errors, setErrors] = useState({});
+  const [hasTextEntered, setHasTextEntered] = useBoolean(false);
 
   useEffect(() => {
     const handleErrorChange = (e) => {
       setErrors(e.detail.errors);
     };
-    if (!textAreaSequenceRef?.current) return;
-    textAreaSequenceRef.current.addEventListener(
-      "error-change",
-      handleErrorChange
-    );
+    const currentTextArea = textAreaSequenceRef?.current;
+    if (!currentTextArea) return;
+    currentTextArea.addEventListener("error-change", handleErrorChange);
+    currentTextArea.quill.once("text-change", () => setHasTextEntered(true));
     return () => {
-      if (textAreaSequenceRef?.current) {
-        textAreaSequenceRef.current.removeEventListener(
-          "error-change",
-          handleErrorChange
-        );
+      if (currentTextArea) {
+        currentTextArea.removeEventListener("error-change", handleErrorChange);
       }
     };
-  }, [textAreaSequenceRef]);
+  }, [textAreaSequenceRef, setHasTextEntered]);
   return (
     <div className="vf-stack vf-stack--400">
       <div className="vf-stack vf-stack--200">
@@ -62,35 +60,38 @@ const QuerySequence = ({ onStageSequence }) => {
           alphabet="ACTGU "
         />
       </div>
-      <div className="vf-cluster vf-cluster--200">
-        <div className="vf-cluster__inner">
-          {errors.hasInvalidCharacters && (
-            <span
-              className="vf-badge vf-badge--secondary"
-              style={errorBadgeStyle}
-            >
-              invalid alphabet
-            </span>
-          )}
-          {(errors.missingFirstHeader ||
-            errors.headerCheckRequiredForMultipleSequences) && (
-            <span
-              className="vf-badge vf-badge--secondary"
-              style={errorBadgeStyle}
-            >
-              missing headers
-            </span>
-          )}
-          {errors.tooShort && (
-            <span
-              className="vf-badge vf-badge--secondary"
-              style={errorBadgeStyle}
-            >
-              sequence length
-            </span>
-          )}
+      {hasTextEntered && (
+        <div className="vf-cluster vf-cluster--200">
+          <div className="vf-cluster__inner">
+            {errors.hasInvalidCharacters && (
+              <span
+                className="vf-badge vf-badge--secondary"
+                style={errorBadgeStyle}
+              >
+                invalid alphabet
+              </span>
+            )}
+            {(errors.missingFirstHeader ||
+              errors.headerCheckRequiredForMultipleSequences) && (
+              <span
+                className="vf-badge vf-badge--secondary"
+                style={errorBadgeStyle}
+              >
+                missing headers
+              </span>
+            )}
+            {errors.tooShort && (
+              <span
+                className="vf-badge vf-badge--secondary"
+                style={errorBadgeStyle}
+              >
+                sequence length
+              </span>
+            )}
+          </div>
         </div>
-      </div>
+      )}
+
       <div>
         <button
           className="vf-button vf-button--secondary vf-button--sm"

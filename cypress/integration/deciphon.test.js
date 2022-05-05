@@ -165,4 +165,17 @@ describe("Deciphon website tests", () => {
         .should("be.visible");
     }
   });
+
+  it("shows previously submitted job history", () => {
+    cy.visit("http://localhost:3000");
+    cy.contains("Load an example query").click();
+    cy.contains("Check and autofix queries").click();
+    cy.contains("Submit query").click();
+    cy.visit("http://localhost:3000");
+    cy.contains("Previously submitted jobs");
+    cy.contains("Homoserine_dh-consensus");
+    cy.get("a[href*='results']").should("contain.text", "Job");
+    cy.contains("Clear history").click();
+    cy.contains("Previously submitted jobs").should("not.exist");
+  });
 });
