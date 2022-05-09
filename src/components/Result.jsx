@@ -145,7 +145,11 @@ const Result = () => {
             api
               .get("/jobs/next_pend")
               .then((response) => {
-                setJobsAhead(parseInt(jobid) - response.data.id);
+                if (response?.data?.id) {
+                  setJobsAhead(parseInt(jobid) - response.data.id);
+                } else {
+                  setJobsAhead(null);
+                }
               })
               .catch((err) => {
                 console.error(err);
