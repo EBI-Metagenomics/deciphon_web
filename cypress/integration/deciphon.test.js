@@ -90,12 +90,12 @@ describe("Deciphon website tests", () => {
 
     cy.contains("Submit query").click();
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq("/results/100");
+      expect(loc.pathname).to.eq("/jobs/100");
     });
   });
 
   it("shows pending query", () => {
-    cy.visit("http://localhost:3000/results/100");
+    cy.visit("http://localhost:3000/jobs/100");
     cy.contains("Job is pending").should("be.visible");
     cy.contains("There are 10 jobs ahead").should("be.visible");
 
@@ -104,23 +104,23 @@ describe("Deciphon website tests", () => {
     cy.window()
       .its("navigator.clipboard")
       .invoke("readText")
-      .should("equal", "http://localhost:3000/results/100");
+      .should("equal", "http://localhost:3000/jobs/100");
   });
 
   it("shows running query", () => {
-    cy.visit("http://localhost:3000/results/101");
+    cy.visit("http://localhost:3000/jobs/101");
     cy.contains("Job is running").should("be.visible");
     cy.get("[role=progressbar]").should("have.attr", "aria-valuenow", 50);
   });
 
   it("shows failed query", () => {
-    cy.visit("http://localhost:3000/results/103");
+    cy.visit("http://localhost:3000/jobs/103");
     cy.contains("Job has failed").should("be.visible");
     cy.contains("Something awful happened").should("be.visible");
   });
 
-  it("shows results for successful query", () => {
-    cy.visit("http://localhost:3000/results/99");
+  it("shows jobs for successful query", () => {
+    cy.visit("http://localhost:3000/jobs/99");
     cy.contains("Job complete").should("be.visible");
     cy.contains("3").should("be.visible");
     cy.contains("Finished at:").should("be.visible");
@@ -174,7 +174,7 @@ describe("Deciphon website tests", () => {
     cy.visit("http://localhost:3000");
     cy.contains("Previously submitted jobs");
     cy.contains("Homoserine_dh-consensus");
-    cy.get("a[href*='results']").should("contain.text", "Job");
+    cy.get("a[href*='jobs']").should("contain.text", "Job");
     cy.contains("Clear history").click();
     cy.contains("Previously submitted jobs").should("not.exist");
   });

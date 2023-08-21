@@ -31,7 +31,7 @@ const PreviousJobs = () => {
           >
             <div className="vf-card__content | vf-stack vf-stack--400">
               <h3 className="vf-card__heading">
-                <a className="vf-card__link" href={`/results/${job.jobId}`}>
+                <a className="vf-card__link" href={`/jobs/${job.jobId}`}>
                   Job {job.jobId}{" "}
                   <svg
                     aria-hidden="true"

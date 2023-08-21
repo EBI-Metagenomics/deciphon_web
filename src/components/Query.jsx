@@ -55,7 +55,7 @@ const Query = () => {
             onClick={() => {
               submitJob(selectedDb, queryText, (jobId, queryNames) => {
                 setPreviousJobs([{ jobId, queryNames }, ...previousJobs]);
-                nav(`/results/${jobId}`);
+                nav(`/jobs/${jobId}`);
               });
             }}
             id="submit"
