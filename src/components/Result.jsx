@@ -177,7 +177,7 @@ const Result = () => {
         setNumResults(response?.data?.length);
       });
     }
-  }, [jobState]);
+  }, [jobState, scanId]);
 
   const finishedAt = jobState
     ? new Date(1000 * parseInt(jobState?.exec_ended || "0")).toLocaleString()
