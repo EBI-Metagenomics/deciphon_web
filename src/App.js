@@ -12,7 +12,7 @@ export default function ParamsExample() {
       <div>
         <Routes>
           <Route path="/" element={<Query />} />
-          <Route path="/results/:jobid" element={<Result />} />
+          <Route path="/jobs/:jobid" element={<Result />} />
         </Routes>
         <ToastContainer />
       </div>

@@ -51,7 +51,7 @@ const ResultCopier = ({ resultSuffix, title, scanId }) => {
           toast.promise(
             () =>
               api
-                .get(`/scans/${scanId}/prods/${resultSuffix}`)
+                .get(`/scans/${scanId}/${resultSuffix}`)
                 .then((response) => {
                   navigator.clipboard.writeText(response.data);
                 }),
@@ -71,7 +71,7 @@ const ResultCopier = ({ resultSuffix, title, scanId }) => {
         className={"vf-button vf-button--secondary vf-button--sm"}
         onClick={() => {
           window.open(
-            `${baseUrl}/scans/${scanId}/prods/${resultSuffix}`,
+            `${baseUrl}/scans/${scanId}/${resultSuffix}`,
             "_blank"
           );
         }}
@@ -121,8 +121,12 @@ const Result = () => {
   const [numResults, setNumResults] = useState(null);
 
   useEffect(() => {
-    api.get(`/jobs/${jobid}/scan`).then((response) => {
-      setScanId(response?.data?.id);
+    api.get(`/scans?job_id=${jobid}`).then((response) => { 
+      if (response?.data.length) {
+        return response.data[0].id;
+      }
+    }).then((scan_id) => {
+        setScanId(scan_id);
     });
   }, [jobid]);
 
@@ -142,19 +146,19 @@ const Result = () => {
           ) {
             setIsPolling(false);
           } else {
-            api
-              .get("/jobs/next_pend")
-              .then((response) => {
-                if (response?.data?.id) {
-                  setJobsAhead(parseInt(jobid) - response.data.id);
-                } else {
-                  setJobsAhead(null);
-                }
-              })
-              .catch((err) => {
-                console.error(err);
-                setJobsAhead(null);
-              });
+            // api
+            //   .get(`/jobs/${jobid}`)
+            //   .then((response) => {
+            //     if (response?.data?.id) {
+            //       setJobsAhead(parseInt(jobid) - response.data.id);
+            //     } else {
+            //       setJobsAhead(null);
+            //     }
+            //   })
+            //   .catch((err) => {
+            //     console.error(err);
+            //     setJobsAhead(null);
+            //   });
           }
         })
         .catch((err) => setErrors([err?.response?.status]));
@@ -169,11 +173,11 @@ const Result = () => {
 
   useEffect(() => {
     if (jobState?.state === "done") {
-      api.get(`/scans/${scanId}/prods`).then((response) => {
+      api.get(`/scans/${scanId}/snap.dcs/prods`).then((response) => {
         setNumResults(response?.data?.length);
       });
     }
-  }, [jobState]);
+  }, [jobState, scanId]);
 
   const finishedAt = jobState
     ? new Date(1000 * parseInt(jobState?.exec_ended || "0")).toLocaleString()
@@ -193,7 +197,7 @@ const Result = () => {
           </li>
         </ul>
       </nav>
-      <h1>Query results</h1>
+      <h1>Query jobs</h1>
 
       {jobState?.state === "pend" && (
         <>
@@ -282,19 +286,29 @@ const Result = () => {
               </div>
 
               <ResultCard
+                title={"Align"}
+                description={
+                  "Alignment of all matches."
+                }
+                resultSuffix={"snap.dcs/view"}
+                fileFormat={"PLAIN"}
+                scanId={scanId}
+              />
+
+              <ResultCard
                 title={"GFF"}
                 description={
                   "GFF (General Feature Format) v3 file listing all found features."
                 }
-                resultSuffix={"gff"}
+                resultSuffix={"snap.dcs/gff"}
                 fileFormat={"GFF"}
                 scanId={scanId}
               />
 
               <ResultCard
-                title={"Fragments"}
-                description={"FA (FASTA) file of matched fragment sequences."}
-                resultSuffix={"fragment"}
+                title={"Query"}
+                description={"FA (FASTA) file of matched query subsequences."}
+                resultSuffix={"snap.dcs/queries"}
                 fileFormat={"FASTA"}
                 scanId={scanId}
               />
@@ -304,7 +318,7 @@ const Result = () => {
                 description={
                   "FAA (FASTA Amino Acids) file of matched amino acid sequences."
                 }
-                resultSuffix={"amino"}
+                resultSuffix={"snap.dcs/aminos"}
                 fileFormat={"FASTA"}
                 scanId={scanId}
               />
@@ -312,7 +326,7 @@ const Result = () => {
               <ResultCard
                 title={"Codons"}
                 description={"FA (FASTA) file of codons."}
-                resultSuffix={"codon"}
+                resultSuffix={"snap.dcs/codons"}
                 fileFormat={"FASTA"}
                 scanId={scanId}
               />
@@ -322,7 +336,7 @@ const Result = () => {
                 description={
                   "FA (FASTA) file, showing match/insertion/deletion states of matches."
                 }
-                resultSuffix={"path"}
+                resultSuffix={"snap.dcs/states"}
                 fileFormat={"FASTA"}
                 scanId={scanId}
               />

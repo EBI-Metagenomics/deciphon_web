@@ -43,7 +43,7 @@ const DatabaseSelection = ({ selectedDb, onSelectDb }) => {
                   }
                 />
                 <label htmlFor={`target_${db.id}`} className="vf-form__label">
-                  {db.filename.replace(/.dcp$/, "").toUpperCase()}
+                  {db.file.name.replace(/.dcp$/, "").toUpperCase()}
                 </label>
               </div>
             ))}

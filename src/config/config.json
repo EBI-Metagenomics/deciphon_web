@@ -1,4 +1,4 @@
 {
-  "API_BASE": "https://deciphon-web-server-01.deciphon.org/api",
+  "API_BASE": "http://deciphon-sched:1515",
   "POLLING_INTERVAL_MS": 1000
 }
