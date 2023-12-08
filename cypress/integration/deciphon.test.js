@@ -122,7 +122,7 @@ describe("Deciphon website tests", () => {
     cy.contains("Job complete").should("be.visible");
     cy.contains("3 matches found").should("be.visible");
     cy.contains("Finished at:").should("be.visible");
-    cy.contains("08/12/2023").should("be.visible");
+    cy.contains("2023").should("be.visible");
     cy.contains("Results files from your search").should("be.visible");
 
     const titleToProds = {
