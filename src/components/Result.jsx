@@ -1,9 +1,11 @@
+import React from "react";
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import {useEffect, useMemo, useState} from "react";
 import api, { baseUrl, pollingInterval } from "../api";
 import Loading from "./Loading";
 import { toast } from "react-toastify";
 import { useInterval } from "react-use";
+import { chunk, find } from "lodash";
 
 const UrlCopier = () => {
   const sayCopied = () =>
@@ -77,7 +79,7 @@ const ResultCopier = ({ resultSuffix, title, scanId }) => {
         }}
       >
         <i className="icon icon-common icon-download" />
-        &nbsp;Download
+        &nbsp;View
       </button>
     </div>
   );
@@ -98,7 +100,7 @@ const ResultCard = ({
       <div className="vf-card__content | vf-stack vf-stack--400">
         <h3 className="vf-card__heading">
           <i className={`icon icon-fileformats icon-${fileFormat}`} />
-          &nbsp; Download {title}
+          &nbsp; {title}
         </h3>
         <p className="vf-card__text">{description}</p>
         <ResultCopier
@@ -119,6 +121,50 @@ const Result = () => {
   const [jobsAhead, setJobsAhead] = useState(null);
   const [scanId, setScanId] = useState(null);
   const [numResults, setNumResults] = useState(null);
+  const [alignmentContent, setAlignmentContent] = useState(null);
+
+  const formattedAlignments = useMemo(() => {
+    if (!alignmentContent) return null;
+    const matches = alignmentContent.split("\n\nAlignments for each domain:");
+    let outputLines = [];
+
+    matches.forEach((matchLines, m) => {
+        let [headerLine, statLine, ...alignmentsLines] = matchLines.split("\n");
+        outputLines.push(<p key={`matches-${m}-header`} className={"alignment-line"}>{headerLine || "Alignments for each domain:"}</p>)
+        outputLines.push(<p key={`matches-${m}-stat`} className={"alignment-line"}>{statLine}</p>);
+        chunk(alignmentsLines, 11).forEach((alignmentChunk, a) => {
+            const [structureLine, targetLine, alignmentLine, queryLine, ...otherLines] = alignmentChunk;
+            const leadingWhitespaceSize = structureLine.length - structureLine.trimStart().length;
+            const lastAminoAcidIdx = structureLine.lastIndexOf(" ") - 1;
+
+            let formattedTargetLine = [<span key="prefix">{targetLine.slice(0, leadingWhitespaceSize)}</span>];
+            let formattedQueryLine = [<span key="prefix">{queryLine.slice(0, leadingWhitespaceSize)}</span>];
+            otherLines.pop();
+            let ppLine = otherLines.pop();
+
+            outputLines.push(<p key={`matches-${m}-alignmemt-${a}-structure`} className="alignment-line">{structureLine}</p>);
+
+            for (let idx=leadingWhitespaceSize; idx <= lastAminoAcidIdx; idx ++) {
+                const alignmentChar = alignmentLine[idx];
+                const ppChar = ppLine[idx];
+                let alignmentClass = alignmentChar === '+' ? "hmmplus" : alignmentChar === ' ' ? "hmmminus" : "hmmmatch";
+                let heatClass = ppChar === '*' ? "heatstar" : ppChar === ' ' ? 'heatgap' : `head${ppChar}`;
+                formattedTargetLine.push(<span key={idx} className={alignmentClass}>{targetLine[idx]}</span>);
+                formattedQueryLine.push(<span key={idx} className={heatClass}>{queryLine[idx]}</span> );
+            }
+            outputLines.push(<p key={`matches-${m}-alignmemt-${a}-target`} className="alignment-line">{ formattedTargetLine }</p>);
+            outputLines.push(<p key={`matches-${m}-alignmemt-${a}-alignment`} className="alignment-line">{ alignmentLine }</p>);
+            outputLines.push(<p key={`matches-${m}-alignmemt-${a}-query`} className="alignment-line">{ formattedQueryLine }</p>);
+            outputLines.push(...otherLines.join("\n"));
+            outputLines.push(<p key={`matches-${m}-alignmemt-${a}-pp`} className="alignment-line">{ppLine}</p>);
+            outputLines.push(<React.Fragment key={`matches-${m}-alignmemt-${a}-brs`}><br/><br/></React.Fragment>);
+        });
+        outputLines.push(<hr key={`matches-${m}-hr`} className="vf-divider"/>);
+    })
+
+    return outputLines;
+  }, [alignmentContent]);
+
 
   useEffect(() => {
     api.get(`/scans?job_id=${jobid}`).then((response) => { 
@@ -146,19 +192,20 @@ const Result = () => {
           ) {
             setIsPolling(false);
           } else {
-            // api
-            //   .get(`/jobs/${jobid}`)
-            //   .then((response) => {
-            //     if (response?.data?.id) {
-            //       setJobsAhead(parseInt(jobid) - response.data.id);
-            //     } else {
-            //       setJobsAhead(null);
-            //     }
-            //   })
-            //   .catch((err) => {
-            //     console.error(err);
-            //     setJobsAhead(null);
-            //   });
+            api
+              .get(`/jobs`)
+              .then((response) => {
+                if (response?.data?.length) {
+                    const nextPendJob = find(response.data, job => job.state === 'pend');
+                  setJobsAhead(parseInt(jobid) - parseInt(nextPendJob.id));
+                } else {
+                  setJobsAhead(null);
+                }
+              })
+              .catch((err) => {
+                console.error(err);
+                setJobsAhead(null);
+              });
           }
         })
         .catch((err) => setErrors([err?.response?.status]));
@@ -176,20 +223,33 @@ const Result = () => {
       api.get(`/scans/${scanId}/snap.dcs/prods`).then((response) => {
         setNumResults(response?.data?.length);
       });
+      api.get(`/scans/${scanId}/snap.dcs/view`).then((response) => {
+          setAlignmentContent(response?.data)
+      })
     }
   }, [jobState, scanId]);
 
   const finishedAt = jobState
-    ? new Date(1000 * parseInt(jobState?.exec_ended || "0")).toLocaleString()
+    ? new Date(jobState?.exec_ended).toLocaleString()
     : null;
 
   return (
     <div className={"vf-stack vf-stack--400"}>
+      <nav className="vf-navigation vf-navigation--main | vf-cluster">
+        <ul className="vf-navigation__list | vf-list | vf-cluster__inner">
+          <li className="vf-navigation__item">
+            <a href="/" className="vf-navigation__link" aria-current="page">Query</a>
+          </li>
+          <li className="vf-navigation__item">
+            <a href="/about" className="vf-navigation__link">About</a>
+          </li>
+        </ul>
+      </nav>
       <nav className="vf-breadcrumbs" aria-label="Breadcrumb">
         <ul className="vf-breadcrumbs__list | vf-list vf-list--inline">
           <li className="vf-breadcrumbs__item">
             <a href="/" className="vf-breadcrumbs__link">
-              Home
+              Query
             </a>
           </li>
           <li className="vf-breadcrumbs__item" aria-current="location">
@@ -197,14 +257,14 @@ const Result = () => {
           </li>
         </ul>
       </nav>
-      <h1>Query jobs</h1>
+      <h1>Results</h1>
 
       {jobState?.state === "pend" && (
         <>
           <h3>Job is pending</h3>
           <span className="vf-badge vf-badge--primary">live updating</span>
           <UrlCopier />
-          {jobsAhead !== null && jobsAhead > 0 && (
+          {jobsAhead !== null && (
             <p>There are {jobsAhead} jobs ahead of yours in the queue.</p>
           )}
         </>
@@ -259,46 +319,59 @@ const Result = () => {
         </div>
       )}
       {jobState?.state === "done" && (
-        <div className="vf-stack vf-stack--800">
-          <h3>Job complete</h3>
-          {numResults !== null && (
-            <div className="vf-flag vf-flag--bottom vf-flag--200">
-              <div className="vf-flag__media">
-                <p className="vf-lede">{numResults}</p>
-              </div>
-              <div className="vf-flag__body">
-                <p className="vf-u-type__text-body--3 vf-u-margin--0">
-                  matches found
-                </p>
-              </div>
-            </div>
-          )}
+        <div className="vf-stack vf-stack--400">
+          <h4>Job complete &mdash; {numResults || 0} matches found</h4>
           <div>
             <span className="vf-form__helper">Finished at: {finishedAt}</span>
           </div>
+            <article className="vf-card vf-card--brand vf-card--bordered">
+                <div className="vf-card__content | vf-stack vf-stack--400">
+                    <div className="vf-sidebar vf-sidebar--end">
+                      <div className="vf-sidebar__inner">
+                        <div>
+                            <h3 className="vf-card__heading">
+                                Alignments
+                            </h3>
+                            <p className="vf-card__text vf-text-body--5">See <a href="https://hmmer-web-docs.readthedocs.io/en/latest/result.html#alignments" className="vf-link" target="_newtab">HMMER documentation</a> for format.</p>
+                        </div>
+                        <div>
+                            <ResultCopier
+                              title={"Alignments"}
+                              resultSuffix={"snap.dcs/view"}
+                              scanId={scanId}
+                            />
+                        </div>
+                      </div>
+                    </div>
+                    <hr className="vf-divider"/>
+                    <div className="alignment-output">
+                        { formattedAlignments }
+                    </div>
+                </div>
+            </article>
           <section className="vf-card-container vf-card-container__col-3 | vf-u-background-color--grey--lightest vf-u-fullbleed">
             <div className="vf-card-container__inner">
               <div className="vf-section-header">
-                <h2 className="vf-section-header__heading">Downloads</h2>
+                <h2 className="vf-section-header__heading">Results</h2>
                 <p className="vf-section-header__text">
-                  Results files from your queries
+                  Results files from your search
                 </p>
               </div>
 
               <ResultCard
-                title={"Align"}
+                title={"Alignments"}
                 description={
                   "Alignment of all matches."
                 }
                 resultSuffix={"snap.dcs/view"}
-                fileFormat={"PLAIN"}
+                fileFormat={"TXT"}
                 scanId={scanId}
               />
 
               <ResultCard
                 title={"GFF"}
                 description={
-                  "GFF (General Feature Format) v3 file listing all found features."
+                  "GFF (General Feature Format) v3 file listing all found matches."
                 }
                 resultSuffix={"snap.dcs/gff"}
                 fileFormat={"GFF"}
@@ -306,7 +379,7 @@ const Result = () => {
               />
 
               <ResultCard
-                title={"Query"}
+                title={"Original Query"}
                 description={"FA (FASTA) file of matched query subsequences."}
                 resultSuffix={"snap.dcs/queries"}
                 fileFormat={"FASTA"}
@@ -314,7 +387,7 @@ const Result = () => {
               />
 
               <ResultCard
-                title={"Amino acids"}
+                title={"Protein sequence matches"}
                 description={
                   "FAA (FASTA Amino Acids) file of matched amino acid sequences."
                 }
@@ -324,7 +397,7 @@ const Result = () => {
               />
 
               <ResultCard
-                title={"Codons"}
+                title={"DNA of protein sequences"}
                 description={"FA (FASTA) file of codons."}
                 resultSuffix={"snap.dcs/codons"}
                 fileFormat={"FASTA"}
@@ -334,10 +407,10 @@ const Result = () => {
               <ResultCard
                 title={"HMM Path"}
                 description={
-                  "FA (FASTA) file, showing match/insertion/deletion states of matches."
+                  "Text file, showing match/insertion/deletion states of matches."
                 }
                 resultSuffix={"snap.dcs/states"}
-                fileFormat={"FASTA"}
+                fileFormat={"TXT"}
                 scanId={scanId}
               />
             </div>

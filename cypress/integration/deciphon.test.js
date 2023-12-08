@@ -1,44 +1,42 @@
 describe("Deciphon website tests", () => {
   beforeEach(() => {
-    cy.intercept("GET", "**/dbs", { fixture: "dbs.json" });
+    cy.intercept("GET", "http://api/dbs", { fixture: "dbs.json" });
 
-    cy.intercept("GET", "**/jobs/99", { fixture: "job_done.json" });
-    cy.intercept("GET", "**/jobs/100", { fixture: "job_pending.json" });
-    cy.intercept("GET", "**/jobs/101", { fixture: "job_running.json" });
-    cy.intercept("GET", "**/jobs/103", { fixture: "job_failed.json" });
+    cy.intercept("GET", "http://api/jobs/99", { fixture: "job_done.json" });
+    cy.intercept("GET", "http://api/jobs/100", { fixture: "job_pending.json" });
+    cy.intercept("GET", "http://api/jobs/101", { fixture: "job_running.json" });
+    cy.intercept("GET", "http://api/jobs/103", { fixture: "job_failed.json" });
 
-    cy.intercept("GET", "**/scans/9", { fixture: "scan_done.json" });
-    cy.intercept("GET", "**/scans/10", { fixture: "scan_pending.json" });
-    cy.intercept("GET", "**/scans/11", { fixture: "scan_running.json" });
-    cy.intercept("GET", "**/scans/13", { fixture: "scan_failed.json" });
+    cy.intercept("GET", "http://api/scans?job_id=99", { fixture: "scan_done.json" });
+    cy.intercept("GET", "http://api/scans?job_id=100", { fixture: "scan_pending.json" });
+    cy.intercept("GET", "http://api/scans?job_id=101", { fixture: "scan_running.json" });
+    cy.intercept("GET", "http://api/scans?job_id=103", { fixture: "scan_failed.json" });
 
-    cy.intercept("GET", "**/jobs/99/scan", { fixture: "scan_done.json" });
-    cy.intercept("GET", "**/jobs/100/scan", { fixture: "scan_pending.json" });
-    cy.intercept("GET", "**/jobs/101/scan", { fixture: "scan_running.json" });
-    cy.intercept("GET", "**/jobs/103/scan", { fixture: "scan_failed.json" });
-
-    cy.intercept("GET", "**/scans/*/prods/gff", { fixture: "prod_gff.txt" }).as(
-      "gff"
-    );
-    cy.intercept("GET", "**/scans/*/prods/fragment", {
-      fixture: "prod_frag.txt",
-    }).as("frag");
-    cy.intercept("GET", "**/scans/*/prods/amino", {
+    cy.intercept("GET", "http://api/scans/*/snap.dcs/view", {
+      fixture: "prod_alignments.txt",
+    }).as("alignments");
+    cy.intercept("GET", "http://api/scans/*/snap.dcs/gff", {
+      fixture: "prod_gff.txt" }
+    ).as("gff");
+    cy.intercept("GET", "http://api/scans/*/snap.dcs/queries", {
+      fixture: "prod_queries.txt" }
+    ).as("queries");
+    cy.intercept("GET", "http://api/scans/*/snap.dcs/aminos", {
       fixture: "prod_amino.txt",
-    }).as("amino");
-    cy.intercept("GET", "**/scans/*/prods/codon", {
+    }).as("aminos");
+    cy.intercept("GET", "http://api/scans/*/snap.dcs/codons", {
       fixture: "prod_codon.txt",
-    }).as("codon");
-    cy.intercept("GET", "**/scans/*/prods/path", {
-      fixture: "prod_path.txt",
-    }).as("path");
-    cy.intercept("GET", "**/scans/*/prods", {
+    }).as("codons");
+    cy.intercept("GET", "http://api/scans/*/snap.dcs/states", {
+      fixture: "prod_hmm.txt",
+    }).as("states");
+    cy.intercept("GET", "http://api/scans/*/snap.dcs/prods", {
       fixture: "prod_all.json",
     });
 
-    cy.intercept("GET", "**/jobs/next_pend", { fixture: "job_next_pend.json" });
+    cy.intercept("GET", "http://api/jobs", { fixture: "jobs_list.json" });
 
-    cy.intercept("POST", "**/scans", {
+    cy.intercept("POST", "http://api/scans", {
       fixture: "scan_new.json",
     });
 
@@ -84,7 +82,7 @@ describe("Deciphon website tests", () => {
   it("loads example query", () => {
     cy.visit("http://localhost:3000");
     cy.contains("Load an example query").click();
-    cy.get(".ql-editor").should("contain.text", "Homoserine_dh-consensus");
+    cy.get(".ql-editor").should("contain.text", "example");
 
     cy.contains("Check and autofix queries").click();
 
@@ -122,28 +120,28 @@ describe("Deciphon website tests", () => {
   it("shows jobs for successful query", () => {
     cy.visit("http://localhost:3000/jobs/99");
     cy.contains("Job complete").should("be.visible");
-    cy.contains("3").should("be.visible");
+    cy.contains("3 matches found").should("be.visible");
     cy.contains("Finished at:").should("be.visible");
-    cy.contains("1970").should("be.visible");
-    cy.contains("Downloads").should("be.visible");
+    cy.contains("08/12/2023").should("be.visible");
+    cy.contains("Results files from your search").should("be.visible");
 
     const titleToProds = {
-      "Download GFF": { clip: "##gff-version", alias: "gff" },
-      "Download Fragment": {
-        clip: "CCTATCATTTCGACGCTCAAGGAGTCGCTGAC",
-        alias: "frag",
+      "GFF": { clip: "##gff-version", alias: "gff" },
+      "Original Query": {
+        clip: "ATTTCGACGCTCAAGGAGTCGCTGA",
+        alias: "queries",
       },
-      "Download Amino acids": {
-        clip: "PIISTLKESLTGDRITRIEGILNGTLNYILTEMEEEGASFSEALKEAQELGYAEADPTDD",
+      "Protein sequence matches": {
+        clip: "ISTLKESLIGDRITRIEGILNGTMNYILTEMEEEGASFSEALKEAQQLGYAEADPTDDVE",
         alias: "amino",
       },
-      "Download Codons": {
-        clip: "CCTATCATTTCGACGCTCAAGGAGTCGCTGAC",
+      "DNA of protein sequences": {
+        clip: "ATTTCGACGCTCAAGGAGTCGCTGATAGGTGACCGTATTACTCGAATCGAAGGGATATTA",
         alias: "codon",
       },
-      "Download HMM Path": {
-        clip: "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM",
-        alias: "path",
+      "HMM Path": {
+        clip: "SBM3M4M5M6M7M8M9M10M11M12M13M14M15M16M17M18M19M20M21M22M23M2",
+        alias: "states",
       },
     };
 
@@ -173,7 +171,7 @@ describe("Deciphon website tests", () => {
     cy.contains("Submit query").click();
     cy.visit("http://localhost:3000");
     cy.contains("Previously submitted jobs");
-    cy.contains("Homoserine_dh-consensus");
+    cy.contains("example");
     cy.get("a[href*='jobs']").should("contain.text", "Job");
     cy.contains("Clear history").click();
     cy.contains("Previously submitted jobs").should("not.exist");

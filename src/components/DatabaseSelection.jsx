@@ -23,7 +23,7 @@ const DatabaseSelection = ({ selectedDb, onSelectDb }) => {
     <fieldset className="vf-form__fieldset | vf-stack vf-stack--400">
       <legend className="vf-form__legend">Target database</legend>
       <p className="vf-form__helper">
-        Support for more database will be added over time
+        See the <a href={"/about#databases"} className="vf-link">About</a> page for database details.
       </p>
       <Loader isLoading={!dbs} />
       <div className="vf-cluster vf-cluster--400">

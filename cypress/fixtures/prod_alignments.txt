@@ -1,0 +1,23 @@
+Alignments for each domain:
+== domain 1  score: 247.9 bits;  conditional E-value: 2.9e-78
+               HHHHHHTCTTSEEEEEEEE--HHHHHHHHHHHCHTT-HHHHHHHHHHTTSS-SSTHHHHTTHHHHHHHHHHHHHHCTTT--GGGSEE--STTS-HH CS
+PF00742.20   3 ISTLKESLIGDRITRIEGILNGTMNYILTEMEEEGASFSEALKEAQQLGYAEADPTDDVEGLDAARKLAILARLAFGLEVELEDVEVEAIEKLTAE 98
+               istlkesl gdritriegilngt+nyiltemeeegasfsealkeaq+lGyaEaDptdDveGlDaarKlailarlafgleveledveve iekltae
+             1 ISTLKESLIGDRITRIEGILNGTMNYILTEMEEEGASFSEALKEAQQLGYAEADPTDDVEGLDAARKLAILARLAFGLEVELEDVEVEAIEKLTAE 96
+   example   1 ATACAGTCAGGCAACAGGATAGCTATACAGAGGGGGTTTGGCAGGCCTGTGGGGCAGGGGGCGGGAACGACGATGTGTGGGTGGGGGGGAGACAGG 284
+               TCCTAACTTGAGTCGTAGTTAGCGAATTCATAAAGCCTCACTAACAATGACACACCAATAGTACCGATCTTCGTCTGTATATAATATACTAATCCA
+               TGGCGGGGATCTTTACAGAACC..TCTCTGGGAGGTACTGGGGGAGAGCCGAGTTGCTGAGATTTAGGATACAGATGAGCGGGCAGGAATAGGTCA
+               ................................................................................................
+               ................................................................................................
+               79********************************************************************************************** PP
+
+               HHHHHHCTTEEEEEEEEECEEEEEEEEEETTSGGGHSSST.EEEEEEESSSEE..EEEEES-SSHHHHHHHH CS
+PF00742.20  99 DIEKIKEEGKVLKLVASAVEARVKPELVPKSHPLASVKGSDNAVAVETERHSVgeLVVQGPGAGEEPTASAV 170
+               die+ keegkvlklvasavearvkpelvpkshplasvkgsdnavaveter++   lvvqGpgaG+epTAsav
+            97 DIEKIKEEGKVLKLVASAVEARVKPELVPKSHPLASVKGSDNAVAVETERHSVGELVVQGPGAGEEPTASAV 168
+   example 287 GAGAAAGGGAGTACGGAGGGGAGACGCGCATCCTGTGAGTGAGGGGGAGCCTGGGCGGCGCGGGGGCAGTGG 501
+               ATAATAAAGATTATTCGCTACGTACATTCACACTCCTAGCAACTCTACAGACGGATTTAGCGCGAACCCCCT
+               TTAAAGAGTATAAAGACCCACGCGTGGATGATAACGAACTCCCGTAAGAATTTCACAGGAAGTCAGACACTA
+               ....................................................A...................
+               ........................................................................
+               *************************************************987667***************** PP

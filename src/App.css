@@ -2,3 +2,69 @@ button:disabled {
   opacity: 0.5;
   cursor: unset;
 }
+
+.alignment-output {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12px;
+  white-space: pre-wrap;
+}
+
+p.alignment-line {
+  margin: 0;
+}
+
+span.hmmminus {
+  background: white;
+}
+
+span.hmmplus {
+  background: #ccc;
+}
+
+span.hmmmatch {
+  background: #999;
+}
+
+span.heatgap {
+  background: white;
+}
+
+span.heat1 {
+  background: #f4f4f4;
+}
+
+span.heat2 {
+  background: #eaeaea;
+}
+
+span.heat3 {
+  background: #e0e0e0;
+}
+
+span.heat4 {
+  background: #d6d6d6;
+}
+
+span.heat5 {
+  background: #ccc;
+}
+
+span.heat6 {
+  background: #c1c1c1;
+}
+
+span.heat7 {
+  background: #b7b7b7;
+}
+
+span.heat8 {
+  background: #adadad;
+}
+
+span.heat9 {
+  background: #a3a3a3;
+}
+
+span.heatstar {
+  background: #999;
+}

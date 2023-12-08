@@ -96,12 +96,24 @@ const QuerySequence = ({ onStageSequence }) => {
         <button
           className="vf-button vf-button--secondary vf-button--sm"
           onClick={async () => {
+            if (!textAreaSequenceRef.current.sequence.trim().length) return;
             await textAreaSequenceRef.current.cleanUp();
             workaroundMultipleSequences(textAreaSequenceRef.current);
             onStageSequence(textAreaSequenceRef.current.sequence);
           }}
+          disabled={!hasTextEntered}
         >
           Check and autofix queries
+        </button>
+        <button
+          className="vf-button vf-button--tertiary vf-button--sm"
+          onClick={async () => {
+            await textAreaSequenceRef.current.quill.setContents([]);
+            await setErrors({});
+          }}
+          disabled={!hasTextEntered}
+        >
+          Reset
         </button>
       </div>
     </div>

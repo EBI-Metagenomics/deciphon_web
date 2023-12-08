@@ -1,6 +1,6 @@
 {
   "id": 100,
-  "type": 0,
+  "type": "scan",
   "state": "pend",
   "progress": 0,
   "error": "",
