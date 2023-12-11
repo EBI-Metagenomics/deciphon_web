@@ -17,9 +17,9 @@ const About = () => {
             <div>
                 <h1> About Deciphon </h1>
                 <p className="vf-u-type__text-body--2">
-                    Deciphon predicts protein annotations on short- to long-read sequence data, in the presence of technical errors.
-                    It uses <a className="vf-link" href="https://github.com/EBI-Metagenomics/imm" target="_newtab">Invisible Markov Models (IMMs)</a> to infer proteins using the Viterbi method.
-
+                    Deciphon annotates short- and long-read DNA sequence data with protein family annotations, without the need for calling open reading frames.&nbsp;
+                    Inspired by the original <a href="https://europepmc.org/article/MED/15123596" target="_newtab">GeneWise</a> algorithm, Deciphon uses <a className="vf-link" href="https://github.com/EBI-Metagenomics/imm" target="_newtab">Invisible Markov Models (IMMs)</a> to infer proteins using the Viterbi method and a protein profile HMM library.&nbsp;
+                    Deciphon has currently been developed for proteins that do not have introns, in other words it is not splice aware.
                 </p>
                 <p className="vf-u-type__text-body--2">
                     The software can be downloaded from the <a className="vf-link" href="https://github.com/EBI-Metagenomics/deciphon" target="_newtab">EBI-Metagenomics GitHub</a>.
@@ -41,7 +41,7 @@ const About = () => {
                 <a id="databases"/>
                 <h3> Pfam </h3>
                 <p className="vf-u-type__text-body--2">
-                    Deciphon’s "Pfam" database refers to the <a className="vf-link" href="https://ftp.ebi.ac.uk/pub/databases/Pfam/releases/Pfam36.0/Pfam-A.hmm.gz">Pfam-A 36.0</a> protein database processed using the NCBI translation table 11 (the Bacterial, Archaeal and Plan Plastic Code).
+                    Deciphon’s "Pfam" database refers to the <a className="vf-link" href="https://ftp.ebi.ac.uk/pub/databases/Pfam/releases/Pfam36.0/Pfam-A.hmm.gz">Pfam-A 36.0</a> protein database processed using the NCBI translation table 11 (the Bacterial, Archaeal and Plant Plastic Code).
                 </p>
             </div>
           </div>
