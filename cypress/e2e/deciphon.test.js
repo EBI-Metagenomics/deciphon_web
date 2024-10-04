@@ -1,3 +1,11 @@
+Cypress.Commands.add('assertValueCopiedToClipboard', expected => {
+  cy.window().then(win => {
+    win.navigator.clipboard.readText().then(text => {
+      expect(text).to.contains(expected)
+    })
+  })
+})
+
 describe("Deciphon website tests", () => {
   beforeEach(() => {
     cy.intercept("GET", "http://api/dbs", { fixture: "dbs.json" });
@@ -96,13 +104,10 @@ describe("Deciphon website tests", () => {
     cy.visit("http://localhost:3000/jobs/100");
     cy.contains("Job is pending").should("be.visible");
     cy.contains("There are 10 jobs ahead").should("be.visible");
-
+    cy.get("a").first().focus();
     cy.get(".icon-copy").click();
     cy.contains("👍").should("be.visible");
-    cy.window()
-      .its("navigator.clipboard")
-      .invoke("readText")
-      .should("equal", "http://localhost:3000/jobs/100");
+    cy.assertValueCopiedToClipboard("http://localhost:3000/jobs/100");
   });
 
   it("shows running query", () => {
@@ -146,15 +151,12 @@ describe("Deciphon website tests", () => {
     };
 
     for (const dlTitle in titleToProds) {
+      cy.get("a").first().focus();
       cy.get("article")
         .filter(`:contains('${dlTitle}')`)
         .find(".icon-copy")
         .click();
-
-      cy.window()
-        .its("navigator.clipboard")
-        .invoke("readText")
-        .should("contain", titleToProds[dlTitle].clip);
+      cy.assertValueCopiedToClipboard(titleToProds[dlTitle].clip)
 
       cy.get("article")
         .filter(`:contains('${dlTitle}')`)
