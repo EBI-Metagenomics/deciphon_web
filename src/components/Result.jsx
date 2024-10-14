@@ -193,11 +193,14 @@ const Result = () => {
             setIsPolling(false);
           } else {
             api
-              .get(`/jobs`)
+              .get(`/jobs?limit=30`)
               .then((response) => {
                 if (response?.data?.length) {
-                    const nextPendJob = find(response.data, job => job.state === 'pend');
-                  setJobsAhead(parseInt(jobid) - parseInt(nextPendJob.id));
+                  const nextPendJob = find(response.data, job => job.state === 'pend' || job.state === 'run');
+                  if (nextPendJob != undefined)
+                    setJobsAhead(parseInt(jobid) - parseInt(nextPendJob.id));
+                  else
+                    setJobsAhead(null);
                 } else {
                   setJobsAhead(null);
                 }
