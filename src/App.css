@@ -68,3 +68,7 @@ span.heat9 {
 span.heatstar {
   background: #999;
 }
+
+body {
+  overflow-x: hidden;
+}
