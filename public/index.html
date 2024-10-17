@@ -36,7 +36,7 @@
 <script defer="defer" src="//ebi.emblstatic.net/web_guidelines/EBI-Framework/v1.4/js/script.js"></script>
 <link rel="stylesheet" href="https://assets.emblstatic.net/vf/v2.4.12/assets/ebi-header-footer/ebi-header-footer.css" type="text/css" media="all" />
 
-<section class="vf-hero vf-hero--1200 | vf-u-fullbleed" style="--vf-hero--bg-image: url(https://www.ebi.ac.uk/metagenomics/proteins/static/img/banner.94dfddd7aebb.jpg);">
+<section class="vf-hero vf-hero--1200 | vf-u-fullbleed" id="hero">
   <div class="vf-hero__content | vf-box | vf-stack vf-stack--400">
     <p class="vf-hero__kicker"><a href="https://ebi.ac.uk">EMBL-EBI</a> | Deciphon</p>
     <p class="vf-hero__kicker"><span class="vf-badge vf-badge--primary">alpha</span></p>
@@ -45,6 +45,13 @@
     <p class="vf-hero__text">Query DNA or RNA sequences against large protein family databases.</p>
   </div>
 </section>
+
+<script>
+  window.onload = function() {
+    const rootUrl = window.location.origin;
+    document.documentElement.style.setProperty("--vf-hero--bg-image", `url(${rootUrl}/banner.jpg)`);
+  }
+</script>
 
 <noscript>You need to enable JavaScript to run this app.</noscript>
 <div id="root"></div>
