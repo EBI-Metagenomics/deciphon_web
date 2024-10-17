@@ -8,7 +8,7 @@ The web client for submitting queries to [Deciphon](https://github.com/EBI-Metag
 # Architecture
 
 This is a React app.
-Deciphon Web interacts with Deciphon via [Deciphon's REST API](https://github.com/EBI-Metagenomics/deciphon-api).
+Deciphon Web interacts with Deciphon via [Deciphon's REST API](https://github.com/EBI-Metagenomics/deciphon/tree/main/sched).
 
 # Development
 

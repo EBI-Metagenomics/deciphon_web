@@ -13,12 +13,16 @@ const PreviousJobs = () => {
 
   const getJobsAhead = () => {
     api
-      .get(`/jobs`)
+      .get(`/jobs?limit=30`)
       .then((response) => {
         if (response?.data?.length) {
-          const nextPendJob = find(response.data, job => job.state === 'pend');
-          const lastSubmittedJob = last(response.data);
-          setJobsAhead(parseInt(lastSubmittedJob.id) - parseInt(nextPendJob.id));
+          const nextPendJob = find(response.data, job => job.state === 'pend' || job.state === 'run');
+          if (nextPendJob != undefined)
+          {
+            const lastSubmittedJob = last(response.data);
+            setJobsAhead(parseInt(lastSubmittedJob.id) - parseInt(nextPendJob.id));
+          } else
+            setJobsAhead(null);
         } else {
           setJobsAhead(null);
         }

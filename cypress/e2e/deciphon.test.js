@@ -42,7 +42,7 @@ describe("Deciphon website tests", () => {
       fixture: "prod_all.json",
     });
 
-    cy.intercept("GET", "http://api/jobs", { fixture: "jobs_list.json" });
+    cy.intercept("GET", "http://api/jobs?limit=*", { fixture: "jobs_list.json" });
 
     cy.intercept("POST", "http://api/scans", {
       fixture: "scan_new.json",
@@ -57,6 +57,7 @@ describe("Deciphon website tests", () => {
         },
       })
     );
+    cy.window().focus();
   });
 
   it("loads successfully", () => {
