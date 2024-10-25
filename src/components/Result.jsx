@@ -176,52 +176,59 @@ const Result = () => {
     });
   }, [jobid]);
 
+  function checkJobsAhead() {
+    api
+      .get(`/jobs?limit=30`)
+      .then((response) => {
+        if (response?.data?.length) {
+          const nextPendJob = find(response.data, job => job.state === 'pend' || job.state === 'run');
+          if (nextPendJob !== undefined)
+            setJobsAhead(parseInt(jobid) - parseInt(nextPendJob.id));
+          else
+            setJobsAhead(null);
+        } else {
+          setJobsAhead(null);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        setJobsAhead(null);
+      });
+  }
+
+  const checkJobState = (value) => {
+   api
+     .get(`/jobs/${value}`)
+     .then((response) => {
+       setJobState(response.data);
+       if (response.data?.error?.length) {
+         setErrors([response.data.error]);
+       }
+       if (
+         response?.data?.state !== "done" &&
+         response?.data?.state !== "fail"
+       ) {
+         checkJobsAhead();
+         setIsPolling(true);
+       }
+     })
+     .catch((err) => setErrors([err?.response?.status]));
+  }
+
+  useEffect(() => {
+   checkJobState(jobid);
+  }, [jobid]);
+
   useInterval(
     () => {
-      if (!jobid) return;
-      api
-        .get(`/jobs/${jobid}`)
-        .then((response) => {
-          setJobState(response.data);
-          if (response.data?.error?.length) {
-            setErrors([response.data.error]);
-          }
-          if (
-            response?.data?.state === "done" ||
-            response?.data?.state === "fail"
-          ) {
-            setIsPolling(false);
-          } else {
-            api
-              .get(`/jobs?limit=30`)
-              .then((response) => {
-                if (response?.data?.length) {
-                  const nextPendJob = find(response.data, job => job.state === 'pend' || job.state === 'run');
-                  if (nextPendJob != undefined)
-                    setJobsAhead(parseInt(jobid) - parseInt(nextPendJob.id));
-                  else
-                    setJobsAhead(null);
-                } else {
-                  setJobsAhead(null);
-                }
-              })
-              .catch((err) => {
-                console.error(err);
-                setJobsAhead(null);
-              });
-          }
-        })
-        .catch((err) => setErrors([err?.response?.status]));
+      if (!isPolling) return;
+      checkJobState(jobid);
     },
     isPolling ? pollingInterval : null
   );
 
   useEffect(() => {
-    if (!jobid) return;
-    setIsPolling(true);
-  }, [jobid]);
-
-  useEffect(() => {
+    if (!scanId) return;
     if (jobState?.state === "done") {
       api.get(`/scans/${scanId}/snap.dcs/prods`).then((response) => {
         setNumResults(response?.data?.length);
