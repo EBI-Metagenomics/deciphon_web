@@ -330,7 +330,7 @@ const Result = () => {
       )}
       {jobState?.state === "done" && (
         <div className="vf-stack vf-stack--400">
-          <h4>Job complete &mdash; {numResults || 0} matches found</h4>
+          <h4>Job complete &mdash; {numResults || '\u21BA'} matches found</h4>
           <div>
             <span className="vf-form__helper">Finished at: {finishedAt}</span>
           </div>
