@@ -155,7 +155,11 @@ const Result = () => {
             outputLines.push(<p key={`matches-${m}-alignmemt-${a}-target`} className="alignment-line">{ formattedTargetLine }</p>);
             outputLines.push(<p key={`matches-${m}-alignmemt-${a}-alignment`} className="alignment-line">{ alignmentLine }</p>);
             outputLines.push(<p key={`matches-${m}-alignmemt-${a}-query`} className="alignment-line">{ formattedQueryLine }</p>);
-            outputLines.push(...otherLines.join("\n"));
+            outputLines.push(otherLines[0]);
+            outputLines.push(otherLines[1]);
+            outputLines.push(otherLines[2]);
+            outputLines.push(otherLines[3]);
+            outputLines.push(otherLines[4]);
             outputLines.push(<p key={`matches-${m}-alignmemt-${a}-pp`} className="alignment-line">{ppLine}</p>);
             outputLines.push(<React.Fragment key={`matches-${m}-alignmemt-${a}-brs`}><br/><br/></React.Fragment>);
         });
