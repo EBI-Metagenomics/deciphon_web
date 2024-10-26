@@ -155,11 +155,11 @@ const Result = () => {
             outputLines.push(<p key={`matches-${m}-alignmemt-${a}-target`} className="alignment-line">{ formattedTargetLine }</p>);
             outputLines.push(<p key={`matches-${m}-alignmemt-${a}-alignment`} className="alignment-line">{ alignmentLine }</p>);
             outputLines.push(<p key={`matches-${m}-alignmemt-${a}-query`} className="alignment-line">{ formattedQueryLine }</p>);
-            outputLines.push(otherLines[0]);
-            outputLines.push(otherLines[1]);
-            outputLines.push(otherLines[2]);
-            outputLines.push(otherLines[3]);
-            outputLines.push(otherLines[4]);
+            outputLines.push(<p key={`matches-${m}-alignmemt-${a}-residue0`} className="alignment-line">{ otherLines[0] }</p>);
+            outputLines.push(<p key={`matches-${m}-alignmemt-${a}-residue1`} className="alignment-line">{ otherLines[1] }</p>);
+            outputLines.push(<p key={`matches-${m}-alignmemt-${a}-residue2`} className="alignment-line">{ otherLines[2] }</p>);
+            outputLines.push(<p key={`matches-${m}-alignmemt-${a}-residue3`} className="alignment-line">{ otherLines[3] }</p>);
+            outputLines.push(<p key={`matches-${m}-alignmemt-${a}-residue4`} className="alignment-line">{ otherLines[4] }</p>);
             outputLines.push(<p key={`matches-${m}-alignmemt-${a}-pp`} className="alignment-line">{ppLine}</p>);
             outputLines.push(<React.Fragment key={`matches-${m}-alignmemt-${a}-brs`}><br/><br/></React.Fragment>);
         });
