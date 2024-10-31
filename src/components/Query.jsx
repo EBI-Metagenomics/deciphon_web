@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import PreviousJobs from "./PreviousJobs";
 import { useLocalStorage } from "react-use";
 import api from "../api";
+import Navigation from "./Navigation";
 
 const submitJob = (dbId, queryText, handleJobSubmitted) => {
   const seqs = queryText.split(/(?=>)/g);
@@ -35,16 +36,7 @@ const Query = () => {
   const [previousJobs, setPreviousJobs] = useLocalStorage("submittedJobs", []);
   return (
     <>
-      <nav className="vf-navigation vf-navigation--main | vf-cluster">
-        <ul className="vf-navigation__list | vf-list | vf-cluster__inner">
-          <li className="vf-navigation__item">
-            <a href="/" className="vf-navigation__link" aria-current="page">Query</a>
-          </li>
-          <li className="vf-navigation__item">
-            <a href="/about" className="vf-navigation__link">About</a>
-          </li>
-        </ul>
-      </nav>
+      <Navigation page="query"></Navigation>
       <div className={"vf-stack vf-stack--400"}>
         <div>
           <h1> Query Deciphon </h1>

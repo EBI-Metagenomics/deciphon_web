@@ -109,7 +109,7 @@ const QuerySequence = ({ onStageSequence }) => {
           className="vf-button vf-button--tertiary vf-button--sm"
           onClick={async () => {
             await textAreaSequenceRef.current.quill.setContents([]);
-            await setErrors({});
+            setErrors({});
           }}
           disabled={!hasTextEntered}
         >
