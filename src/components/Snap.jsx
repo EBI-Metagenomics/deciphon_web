@@ -1,14 +1,18 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { chunk } from "lodash";
 import { toast } from "react-toastify";
 import api, { baseUrl } from "../api";
 import { ErrorCard } from "./Error";
 
 function DomainChunk({ domainChunk }) {
-  const [struct, targetLine, align, queryLine, ...residues] = domainChunk;
-  const leadingWhitespaceSize = struct.length - struct.trimStart().length;
-  const lastAminoAcidIdx = struct.lastIndexOf(" ") - 1;
+  let struct = null;
+  if (domainChunk[0].endsWith("CS"))
+    [struct, ...domainChunk] = domainChunk;
+  let [targetLine, align, queryLine, ...residues] = domainChunk;
+  let pp = residues.pop();
+
+  const leadingWhitespaceSize = pp.length - pp.trimStart().length;
+  const lastAminoAcidIdx = targetLine.lastIndexOf(" ") - 1;
 
   function align_class(x) {
     return x === '+' ? "hmmplus" : x === ' ' ? "hmmminus" : "hmmmatch"
@@ -18,7 +22,7 @@ function DomainChunk({ domainChunk }) {
     return x === '*' ? "heatstar" : x === ' ' ? 'heatgap' : `head${x}`;
   }
 
-  let target = [<span key="prefix">{targetLine.slice(0, leadingWhitespaceSize)}</span>];
+  let target = [<span key="target-prefix">{targetLine.slice(0, leadingWhitespaceSize)}</span>];
   {
     let i = leadingWhitespaceSize;
     while (i <= lastAminoAcidIdx) {
@@ -32,10 +36,9 @@ function DomainChunk({ domainChunk }) {
       i = j;
     }
   }
+  target.push(<span key="target-suffix">{targetLine.slice(lastAminoAcidIdx + 1, targetLine.length)}</span>);
 
-  let query = [<span key="prefix">{queryLine.slice(0, leadingWhitespaceSize)}</span>];
-  residues.pop();
-  let pp = residues.pop();
+  let query = [<span key="query-prefix">{queryLine.slice(0, leadingWhitespaceSize)}</span>];
   {
     let i = leadingWhitespaceSize;
     while (i <= lastAminoAcidIdx) {
@@ -49,10 +52,11 @@ function DomainChunk({ domainChunk }) {
       i = j;
     }
   }
+  query.push(<span key="target-suffix">{queryLine.slice(lastAminoAcidIdx + 1, queryLine.length)}</span>);
 
   return (
     <div>
-      <p key="struct" className="alignment-line">{struct}</p>
+      {struct && <p key="struct" className="alignment-line">{struct}</p>}
       <p key="target" className="alignment-line">{target}</p>
       <p key="align" className="alignment-line">{align}</p>
       <p key="query" className="alignment-line">{query}</p>
@@ -66,13 +70,31 @@ function DomainChunk({ domainChunk }) {
   );
 }
 
-function Domain({ domain }) {
+function partitionAt(arr, fn) {
   let chunks = [];
-  chunk(domain, 11).forEach((domainChunk, i) => {
-    chunks.push(<DomainChunk key={`chunk-${i}`} domainChunk={domainChunk}></DomainChunk>);
-    chunks.push(<React.Fragment key={`break-${i}`}><br /><br /></React.Fragment>);
-  });
+  let i = 0
+  while (i < arr.length) {
+    let chunk = [];
+    let j = i;
+    while (j < arr.length && !fn(arr[j])) {
+      chunk.push(arr[j]);
+      j++;
+    }
+    if (j < arr.length) chunk.push(arr[j]);
+    chunks.push(chunk);
+    i = j + 1;
+  }
   return chunks;
+}
+
+function Domain({ domain }) {
+  let chunks = partitionAt(domain.filter(x => x.length > 0), x => x.endsWith("PP"))
+  let lines = []
+  chunks.forEach((domainChunk, i) => {
+    lines.push(<DomainChunk key={`chunk-${i}`} domainChunk={domainChunk}></DomainChunk>);
+    lines.push(<React.Fragment key={`break-${i}`}><br /><br /></React.Fragment>);
+  })
+  return lines;
 }
 
 function Alignment({ alignment }) {

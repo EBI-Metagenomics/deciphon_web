@@ -135,7 +135,6 @@ export default function Job() {
 
   useInterval(() => {
     (async () => {
-      console.log("interval");
       if (job?.state === 'pend') {
         fetchJobsAhead(job);
         setJob(await getJob(job.id))
