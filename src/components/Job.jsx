@@ -151,7 +151,7 @@ export default function Job() {
   }, polling)
 
   if (error) return <ErrorCard message={error}></ErrorCard>;
-  return (<>
+  return (<div style={{ minHeight: "348px" }}>
     <Navigation page="query"></Navigation>
     <BreadCrumbs jobid={jobid}></BreadCrumbs>
     <h1>Results</h1>
@@ -159,7 +159,7 @@ export default function Job() {
     {job?.state === 'run' && <JobRun job={job}></JobRun>}
     {scan && <JobDone job={job} scan={scan} snapNumProds={snapNumProds}></JobDone>}
     {job?.state === 'fail' && <JobFail job={job}></JobFail>}
-  </>)
+  </div>)
 }
 
 function BreadCrumbs({ jobid }) {
