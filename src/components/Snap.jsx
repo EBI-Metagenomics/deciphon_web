@@ -29,7 +29,7 @@ function DomainChunk({ domainChunk }) {
         j++;
       }
       target.push(<span key={i} className={align_class(align[i])}>{sequence}</span>);
-      i = j + 1;
+      i = j;
     }
   }
 
@@ -46,7 +46,7 @@ function DomainChunk({ domainChunk }) {
         j++;
       }
       query.push(<span key={i} className={heat_class(pp[i])}>{sequence}</span>);
-      i = j + 1;
+      i = j;
     }
   }
 
