@@ -131,7 +131,7 @@ export default function Job() {
         setPolling(null);
       };
     })();
-  }, [job])
+  }, [job, scan])
 
   useInterval(() => {
     (async () => {

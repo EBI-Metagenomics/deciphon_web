@@ -4,7 +4,7 @@ import api from "../api";
 import {find, last} from "lodash";
 
 const PreviousJobs = () => {
-  const [previousJobs, _, clearPreviousJobs] = useLocalStorage(
+  const [previousJobs, , clearPreviousJobs] = useLocalStorage(
     "submittedJobs",
     []
   );
