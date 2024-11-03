@@ -8,6 +8,7 @@
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
     "axios": "1.6.0",
+    "cypress-real-events": "^1.13.0",
     "istanbul-lib-coverage": "^3.2.0",
     "lodash": "^4.17.21",
     "nyc": "^15.1.0",

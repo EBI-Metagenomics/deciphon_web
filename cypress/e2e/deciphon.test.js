@@ -24,10 +24,12 @@ describe("Deciphon website tests", () => {
       fixture: "prod_alignments.txt",
     }).as("alignments");
     cy.intercept("GET", "http://api/scans/*/snap.dcs/gff", {
-      fixture: "prod_gff.txt" }
+      fixture: "prod_gff.txt"
+    }
     ).as("gff");
     cy.intercept("GET", "http://api/scans/*/snap.dcs/queries", {
-      fixture: "prod_queries.txt" }
+      fixture: "prod_queries.txt"
+    }
     ).as("queries");
     cy.intercept("GET", "http://api/scans/*/snap.dcs/aminos", {
       fixture: "prod_amino.txt",
@@ -106,7 +108,7 @@ describe("Deciphon website tests", () => {
     cy.contains("Job is pending").should("be.visible");
     cy.contains("There are 10 jobs ahead").should("be.visible");
     cy.get("a").first().focus();
-    cy.get(".icon-copy").click();
+    cy.get(".icon-copy").realClick();
     cy.contains("👍").should("be.visible");
     cy.assertValueCopiedToClipboard("http://localhost:3000/jobs/100");
   });

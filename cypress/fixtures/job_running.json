@@ -1,6 +1,6 @@
 {
   "id": 101,
-  "type": 0,
+  "type": "scan",
   "state": "run",
   "progress": 50,
   "error": "",

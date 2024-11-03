@@ -1,6 +1,6 @@
 {
   "id": 103,
-  "type": 0,
+  "type": "scan",
   "state": "fail",
   "progress": 0,
   "error": "Something awful happened",
