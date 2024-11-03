@@ -21,7 +21,7 @@
   "scripts": {
     "start": "react-scripts -r @cypress/instrument-cra start",
     "build": "react-scripts build",
-    "test": "cypress run --browser chrome && nyc report --reporter=text --reporter=text-summary",
+    "test": "cypress run && nyc report --reporter=text --reporter=text-summary",
     "interactive-test": "cypress open",
     "eject": "react-scripts eject"
   },
