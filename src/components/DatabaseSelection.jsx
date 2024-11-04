@@ -30,7 +30,7 @@ const DatabaseSelection = ({ selectedDb, onSelectDb }) => {
         <div className={"vf-cluster__inner"}>
           {!!dbs &&
             dbs.map((db, idx) => (
-              <div className="vf-form__item vf-form__item--radio" key={db.id}>
+              <div className="vf-form__item vf-form__item--radio" style={{ paddingLeft: "2px" }} key={db.id}>
                 <input
                   type="radio"
                   name="target"
