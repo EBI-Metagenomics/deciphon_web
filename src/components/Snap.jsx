@@ -159,7 +159,7 @@ export default function Snap({ scanId }) {
   }, [scanId]);
 
   return (
-    <div>
+    <>
       <article className="vf-card vf-card--brand vf-card--bordered">
         <div className="vf-card__content | vf-stack vf-stack--400">
           <div className="vf-sidebar vf-sidebar--end">
@@ -244,7 +244,7 @@ export default function Snap({ scanId }) {
           />
         </div>
       </section>
-    </div>
+    </>
   );
 }
 
@@ -258,44 +258,38 @@ const SnapCopier = ({ name, title, scanId }) => {
     draggable: true,
     progress: undefined,
   };
+  const [data, setData] = useState(null);
+  const url = `/scans/${scanId}/snap.dcs/${name}`;
+
+  useEffect(() => {
+    api
+      .get(url)
+      .then((response) => setData(response.data))
+  });
+
+  async function onClick() {
+    navigator.clipboard.writeText(data)
+      .then(() => toast.success(`👍 Copied ${title} to clipboard!`, toastOptions))
+  }
 
   return (
     <div>
       <button
         className={"vf-button vf-button--secondary vf-button--sm"}
-        onClick={async () => {
-          toast.promise(
-            () =>
-              api
-                .get(`/scans/${scanId}/snap.dcs/${name}`)
-                .then((response) => {
-                  navigator.clipboard.writeText(response.data);
-                }),
-            {
-              pending: "⏳ Fetching result...",
-              success: `👍 Copied ${title} to clipboard!`,
-              error: "🚨 Sorry something went wrong.",
-            },
-            toastOptions
-          );
-        }}
+        disabled={data === null}
+        onClick={onClick}
       >
         <i className="icon icon-common icon-copy" />
         &nbsp;Copy
       </button>
       <button
         className={"vf-button vf-button--secondary vf-button--sm"}
-        onClick={() => {
-          window.open(
-            `${baseUrl}/scans/${scanId}/snap.dcs/${name}`,
-            "_blank"
-          );
-        }}
+        onClick={() => window.open(`${baseUrl}${url}`, "_blank")}
       >
         <i className="icon icon-common icon-download" />
         &nbsp;View
       </button>
-    </div>
+    </div >
   );
 };
 

@@ -91,7 +91,9 @@ describe("Deciphon website tests", () => {
     cy.contains("Job is pending").should("be.visible");
     cy.contains("There are 10 jobs ahead").should("be.visible");
     cy.get("a").first().focus();
-    cy.get(".icon-copy").realClick();
+    cy.get(`button:has(i.icon-copy):enabled`, { timeout: 100 })
+      .find(".icon-copy")
+      .realClick();
     cy.contains("👍").should("be.visible");
     cy.clipboard().then((x) => x.readText()).then(x => expect(x).to.contain("http://localhost:3000/jobs/100"));
   });
@@ -138,7 +140,7 @@ describe("Deciphon website tests", () => {
 
     for (const dlTitle in titleToProds) {
       cy.get("a").first().focus();
-      cy.get(`article#snap-card-${dlTitle}`)
+      cy.get(`article#snap-card-${dlTitle} button:has(i.icon-copy):enabled`, { timeout: 100 })
         .find(".icon-copy")
         .click();
       cy.clipboard().then((x) => x.readText()).then(x => expect(x).to.contain(titleToProds[dlTitle].clip));
