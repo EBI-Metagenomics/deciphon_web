@@ -1,14 +1,14 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
+import { createRoot } from 'react-dom/client';
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import Query from "./components/Query";
-import Job, {loader} from "./components/Job";
+import Job, { loader } from "./components/Job";
 import About from "./components/About";
 
 const router = createBrowserRouter([
@@ -27,10 +27,11 @@ const router = createBrowserRouter([
   },
 ]);
 
-ReactDOM.render(
+const root = createRoot(document.getElementById("root"));
+
+root.render(
   <React.StrictMode>
     <RouterProvider router={router} />
     <ToastContainer />
-  </React.StrictMode>,
-  document.getElementById("root")
+  </React.StrictMode>
 );
