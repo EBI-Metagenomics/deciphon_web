@@ -1,11 +1,3 @@
-Cypress.Commands.add('assertValueCopiedToClipboard', expected => {
-  cy.window().then(win => {
-    win.navigator.clipboard.readText().then(text => {
-      expect(text).to.contains(expected)
-    })
-  })
-})
-
 describe("Deciphon website tests", () => {
   beforeEach(() => {
     cy.intercept("GET", "http://api/dbs", { fixture: "dbs.json" });
@@ -24,10 +16,12 @@ describe("Deciphon website tests", () => {
       fixture: "prod_alignments.txt",
     }).as("alignments");
     cy.intercept("GET", "http://api/scans/*/snap.dcs/gff", {
-      fixture: "prod_gff.txt" }
+      fixture: "prod_gff.txt"
+    }
     ).as("gff");
     cy.intercept("GET", "http://api/scans/*/snap.dcs/queries", {
-      fixture: "prod_queries.txt" }
+      fixture: "prod_queries.txt"
+    }
     ).as("queries");
     cy.intercept("GET", "http://api/scans/*/snap.dcs/aminos", {
       fixture: "prod_amino.txt",
@@ -48,15 +42,6 @@ describe("Deciphon website tests", () => {
       fixture: "scan_new.json",
     });
 
-    cy.wrap(
-      Cypress.automation("remote:debugger:protocol", {
-        command: "Browser.grantPermissions",
-        params: {
-          permissions: ["clipboardReadWrite", "clipboardSanitizedWrite"],
-          origin: "http://localhost:3000",
-        },
-      })
-    );
     cy.window().focus();
   });
 
@@ -106,9 +91,11 @@ describe("Deciphon website tests", () => {
     cy.contains("Job is pending").should("be.visible");
     cy.contains("There are 10 jobs ahead").should("be.visible");
     cy.get("a").first().focus();
-    cy.get(".icon-copy").click();
+    cy.get(`button:has(i.icon-copy):enabled`, { timeout: 100 })
+      .find(".icon-copy")
+      .realClick();
     cy.contains("👍").should("be.visible");
-    cy.assertValueCopiedToClipboard("http://localhost:3000/jobs/100");
+    cy.clipboard().then((x) => x.readText()).then(x => expect(x).to.contain("http://localhost:3000/jobs/100"));
   });
 
   it("shows running query", () => {
@@ -132,20 +119,20 @@ describe("Deciphon website tests", () => {
     cy.contains("Results files from your search").should("be.visible");
 
     const titleToProds = {
-      "GFF": { clip: "##gff-version", alias: "gff" },
-      "Original Query": {
+      "gff": { clip: "##gff-version", alias: "gff" },
+      "queries": {
         clip: "ATTTCGACGCTCAAGGAGTCGCTGA",
         alias: "queries",
       },
-      "Protein sequence matches": {
+      "aminos": {
         clip: "ISTLKESLIGDRITRIEGILNGTMNYILTEMEEEGASFSEALKEAQQLGYAEADPTDDVE",
         alias: "amino",
       },
-      "DNA of protein sequences": {
+      "codons": {
         clip: "ATTTCGACGCTCAAGGAGTCGCTGATAGGTGACCGTATTACTCGAATCGAAGGGATATTA",
         alias: "codon",
       },
-      "HMM Path": {
+      "states": {
         clip: "SBM3M4M5M6M7M8M9M10M11M12M13M14M15M16M17M18M19M20M21M22M23M2",
         alias: "states",
       },
@@ -153,14 +140,12 @@ describe("Deciphon website tests", () => {
 
     for (const dlTitle in titleToProds) {
       cy.get("a").first().focus();
-      cy.get("article")
-        .filter(`:contains('${dlTitle}')`)
+      cy.get(`article#snap-card-${dlTitle} button:has(i.icon-copy):enabled`, { timeout: 100 })
         .find(".icon-copy")
         .click();
-      cy.assertValueCopiedToClipboard(titleToProds[dlTitle].clip)
+      cy.clipboard().then((x) => x.readText()).then(x => expect(x).to.contain(titleToProds[dlTitle].clip));
 
-      cy.get("article")
-        .filter(`:contains('${dlTitle}')`)
+      cy.get(`article#snap-card-${dlTitle}`)
         .find(".icon-download")
         .parent()
         .should("be.visible");

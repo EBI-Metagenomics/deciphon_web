@@ -1,100 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Deciphon</title>
 
-  <link rel="stylesheet" href="https://assets.emblstatic.net/vf/v2.5.19/css/styles.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xz/fonts@1/serve/ibm-plex-serif.min.css">
+  <!-- Fonts -->
+  <link rel="stylesheet" href="https://ebi.emblstatic.net/web_guidelines/EBI-Icon-fonts/v1.3/fonts.css" defer>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xz/fonts@1/serve/ibm-plex-serif.min.css" defer>
 
-  <link rel="icon" type="image/x-icon" href="https://www.ebi.ac.uk/web_guidelines/EBI-Framework/v1.1/images/logos/EMBL-EBI/favicons/favicon.ico" />
-  <link rel="icon" type="image/png" href="https://www.ebi.ac.uk/web_guidelines/EBI-Framework/v1.1/images/logos/EMBL-EBI/favicons/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="192×192" href="https://www.ebi.ac.uk/web_guidelines/EBI-Framework/v1.1/images/logos/EMBL-EBI/favicons/android-chrome-192x192.png" /> <!-- Android (192px) -->
-  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="https://www.ebi.ac.uk/web_guidelines/EBI-Framework/v1.1/images/logos/EMBL-EBI/favicons/apple-icon-114x114.png" /> <!-- For iPhone 4 Retina display (114px) -->
-  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="https://www.ebi.ac.uk/web_guidelines/EBI-Framework/v1.1/images/logos/EMBL-EBI/favicons/apple-icon-72x72.png" /> <!-- For iPad (72px) -->
-  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://www.ebi.ac.uk/web_guidelines/EBI-Framework/v1.1/images/logos/EMBL-EBI/favicons/apple-icon-144x144.png" /> <!-- For iPad retinat (144px) -->
-  <link rel="apple-touch-icon-precomposed" href="https://www.ebi.ac.uk/web_guidelines/EBI-Framework/v1.1/images/logos/EMBL-EBI/favicons/apple-icon-57x57.png" /> <!-- For iPhone (57px) -->
-  <link rel="mask-icon" href="https://www.ebi.ac.uk/web_guidelines/EBI-Framework/v1.1/images/logos/EMBL-EBI/favicons/safari-pinned-tab.svg" color="#ffffff" /> <!-- Safari icon for pinned tab -->
-  <meta name="msapplication-TileColor" content="#2b5797" /> <!-- MS Icons -->
-  <meta name="msapplication-TileImage" content="https://www.ebi.ac.uk/web_guidelines/EBI-Framework/v1.1/images/logos/EMBL-EBI/favicons/mstile-144x144.png" />
+  <!-- EBI theme -->
+  <link rel="stylesheet" href="https://assets.emblstatic.net/vf/v2.5.20/css/styles.css">
 
-  <!-- Web component polyfill (only loads what it needs) -->
-  <script
-          src="https://cdn.jsdelivr.net/npm/@webcomponents/custom-elements@latest/custom-elements.min.js"
-          defer
-  ></script>
-  <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
-  <script
-          src="https://cdn.jsdelivr.net/npm/@webcomponents/custom-elements@latest/src/native-shim.js"
-          defer
-  ></script>
+  <!-- Top bar: masthead black bar -->
+  <link rel="stylesheet" href="https://assets.emblstatic.net/vf/v2.5.20/assets/ebi-header-footer/ebi-header-footer.css">
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/x-icon" href="https://www.ebi.ac.uk/web_guidelines/EBI-Framework/v1.1/images/logos/EMBL-EBI/favicons/favicon.ico">
+  <link rel="icon" type="image/png" href="https://www.ebi.ac.uk/web_guidelines/EBI-Framework/v1.1/images/logos/EMBL-EBI/favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="192×192" href="https://www.ebi.ac.uk/web_guidelines/EBI-Framework/v1.1/images/logos/EMBL-EBI/favicons/android-chrome-192x192.png">
+  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="https://www.ebi.ac.uk/web_guidelines/EBI-Framework/v1.1/images/logos/EMBL-EBI/favicons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="https://www.ebi.ac.uk/web_guidelines/EBI-Framework/v1.1/images/logos/EMBL-EBI/favicons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://www.ebi.ac.uk/web_guidelines/EBI-Framework/v1.1/images/logos/EMBL-EBI/favicons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon-precomposed" href="https://www.ebi.ac.uk/web_guidelines/EBI-Framework/v1.1/images/logos/EMBL-EBI/favicons/apple-icon-57x57.png">
+  <link rel="mask-icon" href="https://www.ebi.ac.uk/web_guidelines/EBI-Framework/v1.1/images/logos/EMBL-EBI/favicons/safari-pinned-tab.svg" color="#ffffff">
+  <meta name="msapplication-TileColor" content="#2b5797">
+  <meta name="msapplication-TileImage" content="https://www.ebi.ac.uk/web_guidelines/EBI-Framework/v1.1/images/logos/EMBL-EBI/favicons/mstile-144x144.png">
+
+  <style>
+    head, title, link, meta, style, script, .vf-hero {--vf-stack-margin--custom: 0;                                             }
+    #masthead-black-bar                              {height                   : 35.1px !important;                             }
+    .vf-hero                                         {background: rgb(203, 221, 178) url('%PUBLIC_URL%/banner.webp') !important;}
+  </style>
+
 </head>
-<body class="vf-body | vf-stack vf-stack--200">
-<header id="masthead-black-bar" class="clearfix masthead-black-bar | ebi-header-footer vf-content vf-u-fullbleed"></header>
-<link rel="import" href="https://www.embl.org/api/v1/pattern.html?filter-content-type=article&filter-id=6682&pattern=node-body&source=contenthub" data-target="self" data-embl-js-content-hub-loader>
-<link rel="stylesheet" href="//ebi.emblstatic.net/web_guidelines/EBI-Icon-fonts/v1.3/fonts.css" type="text/css" media="all" />
-<script defer="defer" src="//ebi.emblstatic.net/web_guidelines/EBI-Framework/v1.4/js/script.js"></script>
-<link rel="stylesheet" href="https://assets.emblstatic.net/vf/v2.4.12/assets/ebi-header-footer/ebi-header-footer.css" type="text/css" media="all" />
 
-<section class="vf-hero vf-hero--1200 | vf-u-fullbleed" id="hero">
-  <div class="vf-hero__content | vf-box | vf-stack vf-stack--400">
-    <p class="vf-hero__kicker"><a href="https://ebi.ac.uk">EMBL-EBI</a> | Deciphon</p>
-    <p class="vf-hero__kicker"><span class="vf-badge vf-badge--primary">alpha</span></p>
-    <h2 class="vf-hero__heading">Deciphon</h2>
-    <p class="vf-hero__subheading">From long reads to protein annotations</p>
-    <p class="vf-hero__text">Query DNA or RNA sequences against large protein family databases.</p>
-  </div>
-</section>
+<body class="vf-body vf-stack vf-stack--200">
+  <header id="masthead-black-bar" class="clearfix masthead-black-bar ebi-header-footer vf-content vf-u-fullbleed"></header>
 
-<script>
-  window.onload = function() {
-    const rootUrl = window.location.origin;
-    document.documentElement.style.setProperty("--vf-hero--bg-image", `url(${rootUrl}/banner.jpg)`);
-  }
-</script>
+  <section class="vf-hero vf-hero--1200 vf-u-fullbleed" id="hero">
+    <div class="vf-hero__content vf-box vf-stack vf-stack--400">
+      <p class="vf-hero__kicker"><a href="https://ebi.ac.uk">EMBL-EBI</a> | Deciphon</p>
+      <h2 class="vf-hero__heading">Deciphon</h2>
+      <p class="vf-hero__subheading">Protein annotation of long reads</p>
+      <p class="vf-hero__text">Query DNA or RNA sequences against Pfam database.</p>
+    </div>
+  </section>
 
-<noscript>You need to enable JavaScript to run this app.</noscript>
-<div id="root"></div>
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <div id="root"></div>
 
-<div class="full-width">
-  <footer class="vf-footer">
-      <div class="vf-footer__inner">
-        <p class="vf-footer__notice">Deciphon: from long reads to protein annotations.</p>
-        <p class="vf-footer__notice">
-            Deciphon’s development has been funded by <a class="vf-list__link" href="https://nanoporetech.com" target="_newtab">Oxford Nanopore Technologies</a> in collaboration with <a class="vf-list__link" href="https://www.ebi.ac.uk" target="_newtab">EMBL-EBI</a>.
-        </p>
-        <div class="vf-footer__links-group | vf-grid">
-          <div class="vf-links">
-            <h4 class="vf-links__heading">Deciphon</h4>
-            <ul class="vf-links__list | vf-list">
-              <li class="vf-list__item">
-                <a class="vf-list__link" href="https://github.com/EBI-Metagenomics/deciphon">Software source</a>
-              </li>
-            </ul>
-          </div>
-          <div class="vf-links">
-            <h4 class="vf-links__heading">Support</h4>
-            <ul class="vf-links__list | vf-list">
-              <li class="vf-list__item">
-                <a class="vf-list__link" href="mailto:metagenomics-help@ebi.ac.uk">Contact</a>
-              </li>
-              <li class="vf-list__item">
-                <a class="vf-list__link" href="https://www.ebi.ac.uk/research/finn/">Finn Group</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <section class="vf-footer__legal | vf-grid vf-grid__col-1">
-          <ul class="vf-footer__list vf-footer__list--legal | vf-list vf-list--inline">
-            <li class="vf-list__item">
-              <a href="https://www.ebi.ac.uk/about/terms-of-use" class="vf-list__link">Terms of use</a>
-            </li>
-          </ul>
-          <p class="vf-footer__legal-text">Copyright © EMBL.</p>
-        </section>
-      </div>
-    </footer>
-</div>
-<script src="https://assets.emblstatic.net/vf/v2.5.19/scripts/scripts.js"></script>
+  <script src="https://assets.emblstatic.net/vf/v2.5.19/scripts/scripts.js"></script>
+  <script src="https://ebi.emblstatic.net/web_guidelines/EBI-Framework/v1.4/js/script.js"></script>
 </body>
+
 </html>

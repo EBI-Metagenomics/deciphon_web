@@ -4,7 +4,7 @@ import api from "../api";
 import {find, last} from "lodash";
 
 const PreviousJobs = () => {
-  const [previousJobs, _, clearPreviousJobs] = useLocalStorage(
+  const [previousJobs, , clearPreviousJobs] = useLocalStorage(
     "submittedJobs",
     []
   );
@@ -17,7 +17,7 @@ const PreviousJobs = () => {
       .then((response) => {
         if (response?.data?.length) {
           const nextPendJob = find(response.data, job => job.state === 'pend' || job.state === 'run');
-          if (nextPendJob != undefined)
+          if (nextPendJob !== undefined)
           {
             const lastSubmittedJob = last(response.data);
             setJobsAhead(parseInt(lastSubmittedJob.id) - parseInt(nextPendJob.id));
