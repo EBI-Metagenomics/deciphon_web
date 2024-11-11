@@ -159,7 +159,7 @@ export default function Snap({ scanId }) {
   }, [scanId]);
 
   return (
-    <>
+    <div>
       <article className="vf-card vf-card--brand vf-card--bordered">
         <div className="vf-card__content | vf-stack vf-stack--400">
           <div className="vf-sidebar vf-sidebar--end">
@@ -244,7 +244,7 @@ export default function Snap({ scanId }) {
           />
         </div>
       </section>
-    </>
+    </div>
   );
 }
 

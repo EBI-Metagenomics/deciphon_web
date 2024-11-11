@@ -10,6 +10,7 @@ import UrlCopier from "./UrlCopier";
 import Progress from "./Progress"
 import Spinner from "./Spinner";
 import Navigation from "./Navigation";
+import Footer from "./Footer";
 
 function JobDone({ job, scan, snapNumProds }) {
   const execEnded = new Date(job.exec_ended).toLocaleString();
@@ -150,15 +151,20 @@ export default function Job() {
   }, polling)
 
   if (error) return <ErrorCard message={error}></ErrorCard>;
-  return (<div style={{ minHeight: "348px" }}>
-    <Navigation page="query"></Navigation>
-    <BreadCrumbs jobid={jobid}></BreadCrumbs>
-    <h1>Results</h1>
-    {job?.state === 'pend' && <JobPend jobsAhead={jobsAhead}></JobPend>}
-    {job?.state === 'run' && <JobRun job={job}></JobRun>}
-    {scan && <JobDone job={job} scan={scan} snapNumProds={snapNumProds}></JobDone>}
-    {job?.state === 'fail' && <JobFail job={job}></JobFail>}
-  </div>)
+  return (
+    <>
+      <Navigation page="query"></Navigation>
+      <div className="vf-stack vf-stack--400 midheight">
+        <BreadCrumbs jobid={jobid}></BreadCrumbs>
+        <h1>Results</h1>
+        {job?.state === 'pend' && <JobPend jobsAhead={jobsAhead}></JobPend>}
+        {job?.state === 'run' && <JobRun job={job}></JobRun>}
+        {scan && <JobDone job={job} scan={scan} snapNumProds={snapNumProds}></JobDone>}
+        {job?.state === 'fail' && <JobFail job={job}></JobFail>}
+      </div>
+      <Footer />
+    </>
+  )
 }
 
 function BreadCrumbs({ jobid }) {

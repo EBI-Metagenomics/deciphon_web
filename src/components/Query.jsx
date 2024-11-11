@@ -6,6 +6,7 @@ import PreviousJobs from "./PreviousJobs";
 import { useLocalStorage } from "react-use";
 import api from "../api";
 import Navigation from "./Navigation";
+import Footer from "./Footer";
 
 const submitJob = (dbId, queryText, handleJobSubmitted) => {
   const seqs = queryText.split(/(?=>)/g);
@@ -37,12 +38,12 @@ const Query = () => {
   return (
     <>
       <Navigation page="query"></Navigation>
-      <div className={"vf-stack vf-stack--400"}>
+      <div className="vf-stack vf-stack--400 midheight">
         <div>
           <h1> Query Deciphon </h1>
         </div>
         <div className="vf-grid vf-grid__col-3">
-          <div className={"vf-grid__col--span-2"}>
+          <div className="vf-grid__col--span-2">
             <QuerySequence onStageSequence={setQueryText} />
           </div>
           <DatabaseSelection
@@ -67,6 +68,7 @@ const Query = () => {
         </div>
       </div>
       <PreviousJobs />
+      <Footer />
     </>
   );
 };

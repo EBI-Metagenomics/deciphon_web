@@ -2,10 +2,6 @@ html {
   margin-right: calc(-1 * (100vw - 100%));
 }
 
-#hero {
-  margin: 0;
-}
-
 button:disabled {
   opacity: 0.5;
   cursor: unset;
@@ -79,9 +75,6 @@ span.heatstar {
 
 body {
   overflow-x: hidden;
-}
-
-.alignment-loading {
 }
 
 .alignment-loading br {
@@ -171,4 +164,8 @@ body {
   50% {
     opacity: 1;
   }
+}
+
+.midheight {
+  min-height: 400px !important;
 }
