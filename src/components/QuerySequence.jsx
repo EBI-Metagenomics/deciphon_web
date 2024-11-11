@@ -3,6 +3,7 @@ import loadWebComponent from "../utils/loadWebComponent";
 import { useEffect, useRef, useState } from "react";
 import exampleQuery from "../utils/exampleQuery";
 import { useBoolean } from "react-use";
+import { has } from "lodash";
 
 const errorBadgeStyle = {
   borderColor: "var(--vf-ui-color--red)",
@@ -22,22 +23,23 @@ const QuerySequence = ({ onStageSequence }) => {
   loadWebComponent("textarea-sequence", TextareaSequence);
   const textAreaSequenceRef = useRef();
   const [errors, setErrors] = useState({});
-  const [hasTextEntered, setHasTextEntered] = useBoolean(false);
+  const [hasText, setHasText] = useBoolean(false);
 
   useEffect(() => {
     const handleErrorChange = (e) => {
-      setErrors(e.detail.errors);
+      if (!hasText) setErrors({});
+      else setErrors(e.detail.errors);
     };
     const currentTextArea = textAreaSequenceRef?.current;
     if (!currentTextArea) return;
     currentTextArea.addEventListener("error-change", handleErrorChange);
-    currentTextArea.quill.once("text-change", () => setHasTextEntered(true));
+    currentTextArea.quill.once("text-change", () => setHasText(true));
     return () => {
       if (currentTextArea) {
         currentTextArea.removeEventListener("error-change", handleErrorChange);
       }
     };
-  }, [textAreaSequenceRef, setHasTextEntered]);
+  }, [hasText, textAreaSequenceRef, setHasText]);
   return (
     <div className="vf-stack vf-stack--400">
       <div className="vf-stack vf-stack--200">
@@ -60,19 +62,18 @@ const QuerySequence = ({ onStageSequence }) => {
           alphabet="ACTGU "
         />
       </div>
-      {hasTextEntered && (
-        <div className="vf-cluster vf-cluster--200">
-          <div className="vf-cluster__inner">
-            {errors.hasInvalidCharacters && (
-              <span
-                className="vf-badge vf-badge--secondary"
-                style={errorBadgeStyle}
-              >
-                invalid alphabet
-              </span>
-            )}
-            {(errors.missingFirstHeader ||
-              errors.headerCheckRequiredForMultipleSequences) && (
+      <div className="vf-cluster vf-cluster--200" style={{ minHeight: 28 }}>
+        <div className="vf-cluster__inner">
+          {errors.hasInvalidCharacters && (
+            <span
+              className="vf-badge vf-badge--secondary"
+              style={errorBadgeStyle}
+            >
+              invalid alphabet
+            </span>
+          )}
+          {(errors.missingFirstHeader ||
+            errors.headerCheckRequiredForMultipleSequences) && (
               <span
                 className="vf-badge vf-badge--secondary"
                 style={errorBadgeStyle}
@@ -80,18 +81,16 @@ const QuerySequence = ({ onStageSequence }) => {
                 missing headers
               </span>
             )}
-            {errors.tooShort && (
-              <span
-                className="vf-badge vf-badge--secondary"
-                style={errorBadgeStyle}
-              >
-                sequence length
-              </span>
-            )}
-          </div>
+          {errors.tooShort && (
+            <span
+              className="vf-badge vf-badge--secondary"
+              style={errorBadgeStyle}
+            >
+              sequence length
+            </span>
+          )}
         </div>
-      )}
-
+      </div>
       <div>
         <button
           className="vf-button vf-button--secondary vf-button--sm"
@@ -101,7 +100,7 @@ const QuerySequence = ({ onStageSequence }) => {
             workaroundMultipleSequences(textAreaSequenceRef.current);
             onStageSequence(textAreaSequenceRef.current.sequence);
           }}
-          disabled={!hasTextEntered}
+          disabled={!hasText}
         >
           Check and autofix queries
         </button>
@@ -109,9 +108,10 @@ const QuerySequence = ({ onStageSequence }) => {
           className="vf-button vf-button--tertiary vf-button--sm"
           onClick={async () => {
             await textAreaSequenceRef.current.quill.setContents([]);
+            setHasText(false);
             setErrors({});
           }}
-          disabled={!hasTextEntered}
+          disabled={!hasText}
         >
           Reset
         </button>
